@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thai News Master — AI Writing Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root {
+  --bg: #0b0d12;
+  --bg-elev: #131722;
+  --bg-elev-2: #1a2030;
+  --border: #232a3c;
+  --text: #e8ecf3;
+  --text-dim: #94a0b8;
+  --text-muted: #6b7896;
+  --accent: #4f8cff;
+  --accent-hover: #3b7af0;
+  --accent-soft: rgba(79, 140, 255, 0.12);
+  --green: #34d399;
+  --orange: #fbbf24;
+  --red: #f87171;
+  --purple: #a78bfa;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'IBM Plex Sans Thai', 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+  min-height: 100vh;
+}
+body { display: flex; flex-direction: column; }
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elev);
+  position: sticky; top: 0; z-index: 50;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #4f8cff, #a78bfa);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: white;
+}
+.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.brand-tag { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.header-actions { display: flex; gap: 8px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  font-weight: 500;
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-primary:disabled { background: var(--bg-elev-2); border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
+.btn-ghost { background: transparent; border: 1px solid transparent; }
+.btn-ghost:hover { background: var(--bg-elev-2); border-color: var(--border); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* Layout */
+.app-main {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 980px) {
+  .app-main { grid-template-columns: 1fr; }
+}
+
+/* Left panel — Input */
+.panel-input {
+  border-right: 1px solid var(--border);
+  padding: 20px;
+  overflow-y: auto;
+  background: var(--bg-elev);
+}
+
+/* Right panel — Output */
+.panel-output {
+  padding: 20px;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.section { margin-bottom: 18px; }
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Mode tabs */
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: var(--bg-elev-2);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+.mode-tab {
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--text-dim);
+  transition: all 0.15s;
+}
+.mode-tab.active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+/* LLM selector */
+.llm-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+.llm-card {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--bg-elev-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.llm-card:hover { border-color: var(--accent); }
+.llm-card.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.llm-card-name { font-size: 12px; font-weight: 600; }
+.llm-card-model { font-size: 10px; color: var(--text-muted); }
+.llm-card-status {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.llm-status-ok { color: var(--green); }
+.llm-status-missing { color: var(--orange); }
+
+/* Form controls */
+.input, .textarea, .select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  transition: border-color 0.15s;
+  resize: vertical;
+}
+.input:focus, .textarea:focus, .select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.textarea { min-height: 200px; font-family: inherit; line-height: 1.5; }
+.input-row { display: flex; gap: 8px; }
+.input-row > * { flex: 1; }
+
+/* Toggle */
+.toggle-group {
+  display: inline-flex;
+  background: var(--bg-elev-2);
+  padding: 3px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+}
+.toggle-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: inherit;
+}
+.toggle-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* Output */
+.output-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px 20px;
+}
+.output-empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.output-empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--text-dim); }
+.output-empty-text { font-size: 13px; max-width: 360px; }
+
+.output-cards { display: flex; flex-direction: column; gap: 16px; }
+.output-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.output-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--bg-elev-2);
+  border-bottom: 1px solid var(--border);
+}
+.output-card-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.provider-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.badge-openai { background: rgba(16, 163, 127, 0.15); color: #10a37f; }
+.badge-gemini { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
+.badge-claude { background: rgba(204, 120, 92, 0.15); color: #cc785c; }
+.output-card-body {
+  padding: 16px 18px;
+  font-size: 14px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+.output-card-body h1, .output-card-body h2, .output-card-body h3 {
+  margin: 16px 0 8px; line-height: 1.3;
+}
+.output-card-body h1 { font-size: 20px; }
+.output-card-body h2 { font-size: 17px; color: var(--accent); }
+.output-card-body h3 { font-size: 15px; }
+.output-card-body p { margin: 8px 0; }
+.output-card-body ul, .output-card-body ol { margin: 8px 0 8px 20px; }
+.output-card-body code {
+  background: var(--bg-elev-2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+.output-card-body pre {
+  background: var(--bg-elev-2);
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.output-card-body table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 13px;
+  width: 100%;
+}
+.output-card-body th, .output-card-body td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+.output-card-body th { background: var(--bg-elev-2); }
+.output-card-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 14px;
+  background: var(--accent-soft);
+  margin: 10px 0;
+  color: var(--text-dim);
+}
+
+/* Streaming spinner */
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid var(--text-muted);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Status footer */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-elev);
+}
+.status-bar .meta { display: flex; gap: 12px; }
+
+/* Modal — Settings */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 480px;
+  max-width: 92vw;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+}
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title { font-size: 15px; font-weight: 600; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+.field { margin-bottom: 14px; }
+.field-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 6px; color: var(--text-dim); }
+.field-help { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+.field-help a { color: var(--accent); text-decoration: none; }
+
+.alert {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-bottom: 12px;
+  border-left: 3px solid;
+}
+.alert-warn { background: rgba(251, 191, 36, 0.08); border-color: var(--orange); color: #f5d97a; }
+.alert-info { background: var(--accent-soft); border-color: var(--accent); color: #b3cdff; }
+
+/* Compare layout */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+}
+@media (max-width: 800px) {
+  .compare-grid { grid-template-columns: 1fr; }
+}
+
+/* Output toolbar */
+.output-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark">ก</div>
+    <div>
+      <div class="brand-name">Thai News Master</div>
+      <div class="brand-tag">บก. + นักเขียนข่าว AI · ราชบัณฑิตในตัว</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" id="btn-help">คู่มือ</button>
+    <button class="btn" id="btn-settings">⚙ ตั้งค่า API Keys</button>
+  </div>
+</header>
+
+<div class="app-main">
+
+  <!-- LEFT: INPUT -->
+  <aside class="panel-input">
+    <div class="section">
+      <div class="section-label">โหมด</div>
+      <div class="mode-tabs" id="mode-tabs">
+        <div class="mode-tab active" data-mode="editor">บก. แปล EN→TH</div>
+        <div class="mode-tab" data-mode="writer">เขียนข่าว</div>
+        <div class="mode-tab" data-mode="seo">ทำ SEO</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">เลือก AI Model</div>
+      <div class="llm-grid" id="llm-grid">
+        <!-- populated by JS -->
+      </div>
+      <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); cursor: pointer;">
+          <input type="checkbox" id="compare-mode" />
+          เปรียบเทียบหลายโมเดลพร้อมกัน
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">หมวดข่าว / ระดับ</div>
+      <div class="input-row">
+        <select class="select" id="category">
+          <option value="auto">ตรวจหาอัตโนมัติ</option>
+          <option value="economy">เศรษฐกิจ</option>
+          <option value="tech">เทคโนโลยี</option>
+          <option value="politics">การเมือง</option>
+          <option value="entertainment">บันเทิง</option>
+          <option value="science">วิทยาศาสตร์</option>
+          <option value="sports">กีฬา</option>
+          <option value="society">สังคม</option>
+          <option value="environment">สิ่งแวดล้อม</option>
+        </select>
+        <select class="select" id="level">
+          <option value="general">General (400-600 คำ)</option>
+          <option value="breaking">Breaking (200-350 คำ)</option>
+          <option value="feature">Feature (700-1,200 คำ)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">เนื้อหาข่าว / URL</div>
+      <textarea class="textarea" id="input-content" placeholder="วางเนื้อหาข่าว (EN หรือ TH) ที่นี่...
+
+หรือใส่ URL แล้วระบบจะแจ้งให้วาง content (browser block CORS — ดึง URL ตรงไม่ได้)" style="min-height: 240px;"></textarea>
+    </div>
+
+    <div class="section">
+      <div class="section-label">หมายเหตุเพิ่มเติม (ถ้ามี)</div>
+      <input class="input" id="input-notes" placeholder="เช่น เน้นมุมไทย, เพิ่มข้อมูลตัวเลข, สั้นกระชับเป็นพิเศษ..." />
+    </div>
+
+    <button class="btn btn-primary" id="btn-generate" style="width: 100%; padding: 12px; font-weight: 600; font-size: 14px;">
+      ▶ สร้างบทความ
+    </button>
+  </aside>
+
+  <!-- RIGHT: OUTPUT -->
+  <main class="panel-output" id="output-area">
+    <div class="output-empty">
+      <div class="output-empty-icon">📰</div>
+      <div class="output-empty-title">ยังไม่มีผลลัพธ์</div>
+      <div class="output-empty-text">
+        ตั้งค่า API key อย่างน้อย 1 ตัว เลือกโหมดและโมเดล วางเนื้อหาข่าว
+        แล้วกด "สร้างบทความ" — ผลลัพธ์จะมาพร้อม SEO/GEO/AEO metadata ครบชุด
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<div class="status-bar">
+  <div>Thai News Master v0.1 · Single-file prototype</div>
+  <div class="meta">
+    <span id="status-keys">ยังไม่ได้ตั้งค่า API key</span>
+    <span>·</span>
+    <span>ข้อมูลทั้งหมดเก็บใน localStorage ของเบราว์เซอร์เท่านั้น</span>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">⚙ API Keys</div>
+      <button class="btn btn-ghost btn-sm" data-close>✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        Key ของคุณจะถูกเก็บใน localStorage ของเบราว์เซอร์เท่านั้น ไม่ส่งไปไหน
+        แต่ละผู้ใช้ใส่ key ของตัวเอง — ไม่แชร์
+      </div>
+
+      <div class="field">
+        <label class="field-label">OpenAI API Key</label>
+        <input class="input" type="password" id="key-openai" placeholder="sk-..." />
+        <div class="field-help">
+          ขอจาก <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>
+          · ใช้ <code>gpt-4o</code>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Google Gemini API Key</label>
+        <input class="input" type="password" id="key-gemini" placeholder="AIza..." />
+        <div class="field-help">
+          ขอจาก <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+          · ใช้ <code>gemini-2.0-flash</code>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Anthropic Claude API Key</label>
+        <input class="input" type="password" id="key-claude" placeholder="sk-ant-..." />
+        <div class="field-help">
+          ขอจาก <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
+          · ใช้ <code>claude-sonnet-4-5</code> · ต้อง enable browser direct access
+        </div>
+      </div>
+
+      <div class="alert alert-warn">
+        ⚠ Claude API ปกติบล็อก browser direct call — เราใช้ header
+        <code>anthropic-dangerous-direct-browser-access: true</code>
+        ถ้ามีปัญหาให้ใช้ OpenAI หรือ Gemini แทน
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-close>ยกเลิก</button>
+      <button class="btn btn-primary" id="btn-save-keys">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="modal-help">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📖 วิธีใช้งาน</div>
+      <button class="btn btn-ghost btn-sm" data-close>✕</button>
+    </div>
+    <div class="modal-body" style="font-size: 13px; line-height: 1.7;">
+      <h3 style="margin-bottom: 8px; font-size: 14px;">3 โหมดการทำงาน</h3>
+      <p><b>บก. แปล EN→TH</b> — แปลข่าวต่างประเทศเป็นไทย ใช้คำตามราชบัณฑิตยสถาน เรียบเรียงด้วยโครงสร้าง Lead → Context → Why it matters → What's next</p>
+      <p><b>เขียนข่าว</b> — เรียบเรียงข่าวจากข้อมูลที่ให้ ครอบคลุมทุกหมวด ทุกภาษา</p>
+      <p><b>ทำ SEO</b> — รับบทความสำเร็จมา สร้าง SEO/GEO/AEO metadata ครบชุดให้</p>
+
+      <h3 style="margin: 16px 0 8px; font-size: 14px;">โมเดลที่รองรับ</h3>
+      <p>OpenAI GPT-4o, Google Gemini 2.0 Flash, Anthropic Claude Sonnet 4.5 — ใส่ key ของแต่ละเจ้าใน "ตั้งค่า"</p>
+
+      <h3 style="margin: 16px 0 8px; font-size: 14px;">โหมดเปรียบเทียบ</h3>
+      <p>เลือกหลายโมเดล + ติ๊ก "เปรียบเทียบหลายโมเดลพร้อมกัน" → ระบบเรียก API ทุกตัวพร้อมกัน เทียบผลลัพธ์ได้ side-by-side</p>
+
+      <h3 style="margin: 16px 0 8px; font-size: 14px;">URL fetching</h3>
+      <p>เบราว์เซอร์บล็อก CORS ดึง URL ของสำนักข่าวต่างๆ ไม่ได้ — ให้ <b>ก๊อบเนื้อหาข่าวมาวางตรงๆ</b> แทน</p>
+
+      <h3 style="margin: 16px 0 8px; font-size: 14px;">ความเป็นส่วนตัว</h3>
+      <p>API key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น เนื้อหาที่คุณวางจะถูกส่งไปยัง API ของ provider ที่เลือก (OpenAI/Google/Anthropic) ตาม policy ของแต่ละเจ้า</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" data-close>เข้าใจแล้ว</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== EMBEDDED THAI TERMS GUIDE ==========
+const THAI_TERMS_GUIDE = `
+# คำศัพท์ราชบัณฑิตที่ต้องใช้ (อย่าผิด)
+
+## เทคโนโลยี
+Internet → อินเทอร์เน็ต (ไม่ใช่ อินเตอร์เน็ต)
+Software → ซอฟต์แวร์
+Hardware → ฮาร์ดแวร์
+Computer → คอมพิวเตอร์
+Digital → ดิจิทัล (ไม่ใช่ ดิจิตอล)
+Smartphone → สมาร์ตโฟน (ไม่ใช่ สมาร์ทโฟน)
+AI / Artificial Intelligence → ปัญญาประดิษฐ์
+Machine Learning → การเรียนรู้ของเครื่อง
+Blockchain → บล็อกเชน
+Cryptocurrency → สกุลเงินดิจิทัล
+Bitcoin → บิตคอยน์
+Algorithm → อัลกอริทึม
+Cloud Computing → คลาวด์คอมพิวติง
+Cybersecurity → ความมั่นคงปลอดภัยไซเบอร์
+Startup → สตาร์ตอัป (ไม่ใช่ สตาร์ทอัพ)
+Application → แอปพลิเคชัน (ไม่ใช่ แอพพลิเคชั่น)
+Platform → แพลตฟอร์ม
+Metaverse → เมตาเวิร์ส
+Generative AI → AI สร้างสรรค์ / เจเนอเรทีฟเอไอ
+
+## เศรษฐกิจ
+Economy → เศรษฐกิจ
+Inflation → เงินเฟ้อ / อัตราเงินเฟ้อ
+Recession → ภาวะถดถอย
+GDP → ผลิตภัณฑ์มวลรวมในประเทศ (GDP)
+Federal Reserve → ธนาคารกลางสหรัฐ (Fed)
+Stock Market → ตลาดหุ้น
+IPO → การเสนอขายหุ้นต่อสาธารณะครั้งแรก (IPO)
+Supply Chain → ห่วงโซ่อุปทาน
+Tariff → ภาษีศุลกากร / อากร
+Sanction → มาตรการคว่ำบาตร
+Subsidy → เงินอุดหนุน
+
+## การเมือง / ระหว่างประเทศ
+Democracy → ประชาธิปไตย
+Diplomat → นักการทูต
+Summit → การประชุมสุดยอด
+Treaty → สนธิสัญญา
+Ceasefire → การหยุดยิง
+Coup → รัฐประหาร
+Referendum → การลงประชามติ
+Parliament → รัฐสภา
+Senate → วุฒิสภา
+Congress → สภาคองเกรส / รัฐสภาสหรัฐ
+
+## วิทยาศาสตร์ / สุขภาพ
+Vaccine → วัคซีน
+Virus → ไวรัส
+Pandemic → การระบาดใหญ่
+Climate Change → การเปลี่ยนแปลงสภาพภูมิอากาศ
+Carbon Emissions → การปล่อยก๊าซคาร์บอน
+Renewable Energy → พลังงานหมุนเวียน
+Nuclear → นิวเคลียร์
+
+## คำไทยที่มักเขียนผิด
+ลิขสิทธิ์ ✓ (ไม่ใช่ ลิขสิทธ์)
+อนุญาต ✓ (ไม่ใช่ อณุญาต / อนุญาติ)
+ผลิตภัณฑ์ ✓ (ต้องมี ฑ์)
+เศรษฐกิจ ✓ (มี ฐ)
+ประธานาธิบดี ✓
+ปฏิบัติ ✓ (ฏ ไม่ใช่ ฎ)
+คอร์รัปชัน ✓ (ไม่มี ่)
+สถานการณ์ ✓ (ไม่ใช่ สถานะการณ์)
+โฆษณา ✓ (ไม่ใช่ โฆษนา)
+
+## เครื่องหมาย
+ๆ ติดคำหน้า — "เด็กๆ" ✓ "เด็ก ๆ" ✗
+"" คำพูด ใส่ทั้งเปิด-ปิด
+( ) อธิบายเพิ่ม / ชื่ออังกฤษครั้งแรก
+— ขีดยาว ขยายความ
+
+## ชื่อองค์กรระหว่างประเทศ
+United Nations → สหประชาชาติ (UN)
+WHO → องค์การอนามัยโลก (WHO)
+World Bank → ธนาคารโลก
+IMF → กองทุนการเงินระหว่างประเทศ (IMF)
+WTO → องค์การการค้าโลก (WTO)
+UNESCO → ยูเนสโก
+ASEAN → อาเซียน
+NATO → นาโต
+EU → สหภาพยุโรป
+OPEC → โอเปก
+
+## ประเทศ / สถานที่
+United States → สหรัฐอเมริกา / สหรัฐ
+United Kingdom → สหราชอาณาจักร / อังกฤษ
+China → จีน
+Russia → รัสเซีย
+Saudi Arabia → ซาอุดีอาระเบีย
+Switzerland → สวิตเซอร์แลนด์
+Washington, D.C. → วอชิงตัน ดี.ซี.
+Silicon Valley → ซิลิคอนวัลเลย์
+Wall Street → วอลล์สตรีท
+
+## หลักการเมื่อไม่แน่ใจ
+1. ถ้ามีในพจนานุกรมราชบัณฑิต → ใช้คำนั้น
+2. ไม่มีแต่แพร่หลาย → ใช้คำที่แพร่หลาย + วงเล็บอังกฤษ
+3. ศัพท์ใหม่ ยังไม่มีคำแปล → ทับศัพท์ + อธิบายในวงเล็บครั้งแรก
+4. ชื่อเฉพาะ (คน/บริษัท/สถานที่) → ทับศัพท์ + อังกฤษในวงเล็บครั้งแรก
+5. แบรนด์ดัง (Apple, Google, Tesla, Meta, Amazon, Microsoft, Samsung, Netflix) → ใช้ภาษาอังกฤษเลย ไม่ต้องแปล
+`;
+
+// ========== SYSTEM PROMPTS ==========
+const PROMPTS = {
+  editor: (level, category, notes) => `คุณคือ "บรรณาธิการข่าวต่างประเทศมืออาชีพ" ที่แปลข่าวภาษาอังกฤษเป็นภาษาไทย
+
+# คลังคำศัพท์ราชบัณฑิตยสถาน (ใช้คำเหล่านี้เสมอ)
+${THAI_TERMS_GUIDE}
+
+# หลักการแปล 5 ข้อ
+1. แปลความ ไม่แปลคำ — เข้าใจย่อหน้าทั้งย่อหน้า แล้วเขียนใหม่เป็นไทยที่ลื่นไหล
+2. ใช้คำตามราชบัณฑิต (เทียบกับคลังคำข้างบน)
+3. ชื่อเฉพาะ — ทับศัพท์ + วงเล็บอังกฤษครั้งแรก ครั้งถัดไปไม่ต้องวงเล็บ
+4. ตัวเลขและหน่วย — ปรับให้ผู้อ่านไทยเข้าใจ (สกุลเงินใส่ทั้ง USD + บาท, ฟาเรนไฮต์ → เซลเซียส, ไมล์ → กิโลเมตร)
+5. คำพูดใส่ "" + ระบุชื่อ+ตำแหน่งผู้พูด
+
+# โครงสร้างบทความ
+- ย่อหน้า 1 — Lead (Who+What ใน 2-3 ประโยค ห้ามขึ้นต้นด้วย "เมื่อเร็วๆ นี้" หรือ "สำนักข่าวรายงานว่า")
+- ย่อหน้า 2-3 — Context (When + Where + How)
+- ย่อหน้า 4-5 — Why it matters (ผลกระทบต่อผู้อ่านไทย/ภูมิภาค)
+- ย่อหน้าสุดท้าย — What's next (สิ่งที่ต้องจับตา)
+
+# ความยาว
+ระดับ ${level}: ${level === 'breaking' ? '200-350 คำ' : level === 'feature' ? '700-1,200 คำ' : '400-600 คำ'}
+หมวด: ${category === 'auto' ? 'ตรวจหาเองจากเนื้อหา' : category}
+${notes ? `\nหมายเหตุพิเศษ: ${notes}` : ''}
+
+# Output Format (Markdown)
+ตอบเป็น Markdown ตามรูปแบบนี้เป๊ะๆ:
+
+## 📰 Title
+[หัวข่าวภาษาไทย]
+
+## 📝 บทความ
+[บทความเต็ม จัดย่อหน้าให้ชัดเจน เว้นบรรทัดระหว่างย่อหน้า]
+
+## 🔑 SEO/GEO/AEO Metadata
+
+**Focus Keyword:** [คำหลัก 1 คำ/วลี]
+**SEO Title:** [≤60 ตัวอักษร]
+**Meta Description:** [140-160 ตัวอักษร]
+**URL Slug:** [lowercase-hyphen-english]
+**Facebook Title:** [≤60 ตัวอักษร]
+**X/Twitter Title:** [สั้นกว่า เน้น impact]
+**Alt Text:** [บรรยายภาพปก 1 ประโยค]
+**Secondary Keywords:** [3-5 คำ คั่นด้วย ,]
+
+**FAQ Schema (3 คำถาม-คำตอบ):**
+Q1: [คำถาม]
+A1: [คำตอบ]
+Q2: [คำถาม]
+A2: [คำตอบ]
+Q3: [คำถาม]
+A3: [คำตอบ]
+
+**AI Snippet (40-60 คำ):** [คำตอบสรุปสำหรับ AI/Voice search]
+
+**People Also Ask:**
+- [คำถามที่ 1]
+- [คำถามที่ 2]
+- [คำถามที่ 3]
+
+## ⚠ หมายเหตุ
+[ถ้ามีจุดที่ไม่แน่ใจ คำที่ต้องตรวจ หรือ context ที่หายไป ระบุที่นี่]
+`,
+
+  writer: (level, category, notes) => `คุณคือ "นักเขียนข่าวมืออาชีพ" ที่เรียบเรียงข่าวจากข้อมูลใดๆ ก็ได้ ไม่ว่าจะเป็นภาษาไทยหรืออังกฤษ ครอบคลุมทุกหมวดข่าว
+
+# คลังคำศัพท์ราชบัณฑิตยสถาน
+${THAI_TERMS_GUIDE}
+
+# หลักการเขียน
+- ภาษาไทยถูกต้องตามราชบัณฑิต
+- โทนกึ่งทางการ — จริงจังแต่ไม่แข็งทื่อ อ่านสบายตา
+- ประโยคกระชับ ย่อหน้าสั้น 2-4 ประโยค
+- Active voice เป็นหลัก
+- ข้อเท็จจริงนำ ความเห็นตาม
+- ขึ้นต้นด้วยเรื่องที่น่าสนใจที่สุด ห้ามใช้ "เมื่อเร็วๆ นี้" หรือ "ตามรายงาน"
+- ชื่อเฉพาะ — ทับศัพท์ + วงเล็บอังกฤษครั้งแรก
+
+# โครงสร้าง 5W1H
+ย่อหน้า 1: Lead (Who+What) — ดึงดูด
+ย่อหน้า 2-3: Context (When+Where+How)
+ย่อหน้า 4-5: Why it matters
+ย่อหน้าสุดท้าย: What's next
+
+# ความยาว
+${level === 'breaking' ? '200-350 คำ (Breaking)' : level === 'feature' ? '700-1,200 คำ (Feature)' : '400-600 คำ (General)'}
+หมวด: ${category === 'auto' ? 'ตรวจเองจากเนื้อหา' : category}
+${notes ? `\nหมายเหตุพิเศษ: ${notes}` : ''}
+
+# Output (Markdown)
+ตอบเป็น Markdown ตามรูปแบบ:
+
+## 📰 Title
+[หัวข่าว ≤80 ตัวอักษร]
+
+## 📝 บทความ
+[บทความเต็ม]
+
+## 🔑 SEO/GEO/AEO Metadata
+
+**Focus Keyword:** [...]
+**SEO Title:** [≤60]
+**Meta Description:** [140-160]
+**URL Slug:** [english-lowercase-hyphen]
+**Facebook Title:** [≤60]
+**X/Twitter Title:** [...]
+**Alt Text:** [...]
+**Secondary Keywords:** [...]
+
+**FAQ Schema:**
+Q1/A1, Q2/A2, Q3/A3
+
+**AI Snippet (40-60 คำ):** [...]
+
+**People Also Ask:**
+- ...
+- ...
+- ...
+`,
+
+  seo: () => `คุณคือผู้เชี่ยวชาญ SEO/GEO/AEO ปี 2026 รับบทความที่เขียนเสร็จแล้วและสร้าง metadata ครบชุดที่ทำให้ Yoast SEO เขียวทุกจุด พร้อม Generative Engine Optimization และ Answer Engine Optimization
+
+# คลังคำราชบัณฑิต
+${THAI_TERMS_GUIDE}
+
+# Output (Markdown)
+
+## 🔑 SEO Metadata
+**Focus Keyword:** [...]
+**SEO Title:** [≤60 ตัวอักษร, ใส่ keyword ข้างหน้า]
+**Meta Description:** [140-160 ตัวอักษร, ดึงดูดให้คลิก]
+**URL Slug:** [english-lowercase-hyphen]
+**Facebook Title:** [≤60, อยากแชร์]
+**X/Twitter Title:** [สั้น, เน้นตัวเลข/impact]
+**Alt Text:** [บรรยายภาพปก]
+**Secondary Keywords:** [3-5 คำ]
+
+## 🤖 GEO (Generative Engine Optimization)
+**AI Snippet (40-60 คำ):** [คำตอบสรุปที่ AI จะอ้างได้]
+**Entity mentions:** [ชื่อคน/องค์กรหลัก ที่ AI ควรจดจำ]
+**Citation-worthy fact:** [ข้อเท็จจริงโดดเด่นที่ AI จะอ้าง]
+
+## ❓ AEO (Answer Engine Optimization)
+**FAQ Schema (3 Q&A):**
+Q1: [...]
+A1: [...]
+Q2: [...]
+A2: [...]
+Q3: [...]
+A3: [...]
+
+**People Also Ask (3 คำถาม):**
+- [...]
+- [...]
+- [...]
+
+**Featured Snippet target:** [คำตอบ 50-60 คำ ที่ Google จะเอาไปทำ snippet]
+
+## 5 Title Variations
+1. [...]
+2. [...]
+3. [...]
+4. [...]
+5. [...]
+`
+};
+
+// ========== STATE ==========
+const STATE = {
+  mode: 'editor',
+  selectedLLMs: new Set(['openai']),
+  compareMode: false,
+  keys: { openai: '', gemini: '', claude: '' }
+};
+
+const LLMS = {
+  openai: { name: 'OpenAI', model: 'gpt-4o', badge: 'badge-openai' },
+  gemini: { name: 'Gemini', model: 'gemini-2.0-flash', badge: 'badge-gemini' },
+  claude: { name: 'Claude', model: 'claude-sonnet-4-5', badge: 'badge-claude' }
+};
+
+// ========== STORAGE ==========
+function loadKeys() {
+  try {
+    const stored = localStorage.getItem('tnm_keys');
+    if (stored) STATE.keys = { ...STATE.keys, ...JSON.parse(stored) };
+  } catch(e) {}
+}
+function saveKeys() {
+  localStorage.setItem('tnm_keys', JSON.stringify(STATE.keys));
+}
+
+// ========== UI ==========
+function renderLLMs() {
+  const grid = document.getElementById('llm-grid');
+  grid.innerHTML = '';
+  Object.entries(LLMS).forEach(([id, info]) => {
+    const card = document.createElement('div');
+    card.className = 'llm-card' + (STATE.selectedLLMs.has(id) ? ' active' : '');
+    card.dataset.llm = id;
+    const hasKey = !!STATE.keys[id];
+    card.innerHTML = `
+      <div class="llm-card-name">${info.name}</div>
+      <div class="llm-card-model">${info.model}</div>
+      <div class="llm-card-status ${hasKey ? 'llm-status-ok' : 'llm-status-missing'}">
+        ${hasKey ? '✓ มี key' : '⚠ ยังไม่มี key'}
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      if (STATE.compareMode) {
+        if (STATE.selectedLLMs.has(id)) STATE.selectedLLMs.delete(id);
+        else STATE.selectedLLMs.add(id);
+      } else {
+        STATE.selectedLLMs.clear();
+        STATE.selectedLLMs.add(id);
+      }
+      renderLLMs();
+    });
+    grid.appendChild(card);
+  });
+  updateStatusBar();
+}
+
+function updateStatusBar() {
+  const haveKeys = Object.entries(STATE.keys).filter(([k,v]) => v).map(([k]) => LLMS[k].name);
+  const el = document.getElementById('status-keys');
+  if (haveKeys.length === 0) {
+    el.textContent = 'ยังไม่ได้ตั้งค่า API key';
+    el.style.color = 'var(--orange)';
+  } else {
+    el.textContent = `Keys: ${haveKeys.join(', ')}`;
+    el.style.color = 'var(--green)';
+  }
+}
+
+function setMode(mode) {
+  STATE.mode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.mode === mode);
+  });
+  // SEO mode doesn't need category/level
+  const isSeo = mode === 'seo';
+  document.getElementById('input-content').placeholder = isSeo
+    ? 'วางบทความที่เขียนเสร็จแล้ว — ระบบจะสร้าง SEO/GEO/AEO ให้'
+    : 'วางเนื้อหาข่าว (EN หรือ TH) ที่นี่...';
+}
+
+// ========== API CALLS ==========
+async function callOpenAI(systemPrompt, userContent, key) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${key}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent }
+      ],
+      temperature: 0.7,
+      max_tokens: 4096
+    })
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`OpenAI ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+async function callGemini(systemPrompt, userContent, key) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ role: 'user', parts: [{ text: userContent }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 4096 }
+    })
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Gemini ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '(ไม่มี response)';
+}
+
+async function callClaude(systemPrompt, userContent, key) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 4096,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Claude ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return data.content?.[0]?.text || '(ไม่มี response)';
+}
+
+const CALLERS = { openai: callOpenAI, gemini: callGemini, claude: callClaude };
+
+// ========== GENERATION ==========
+async function generate() {
+  const content = document.getElementById('input-content').value.trim();
+  if (!content) {
+    alert('กรุณาวางเนื้อหาข่าวก่อน');
+    return;
+  }
+
+  // pick LLMs
+  const llmsToUse = Array.from(STATE.selectedLLMs).filter(id => STATE.keys[id]);
+  if (llmsToUse.length === 0) {
+    alert('กรุณาตั้งค่า API key อย่างน้อย 1 ตัว และเลือกโมเดลที่มี key');
+    return;
+  }
+
+  const level = document.getElementById('level').value;
+  const category = document.getElementById('category').value;
+  const notes = document.getElementById('input-notes').value.trim();
+
+  const systemPrompt = STATE.mode === 'editor'
+    ? PROMPTS.editor(level, category, notes)
+    : STATE.mode === 'writer'
+    ? PROMPTS.writer(level, category, notes)
+    : PROMPTS.seo();
+
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> กำลังสร้าง...';
+
+  // Render placeholder cards
+  const out = document.getElementById('output-area');
+  out.innerHTML = `<div class="output-toolbar">
+    <span class="tag">โหมด: ${STATE.mode}</span>
+    <span class="tag">${llmsToUse.length} โมเดล</span>
+    <span class="tag">${level === 'breaking' ? 'Breaking' : level === 'feature' ? 'Feature' : 'General'}</span>
+    ${category !== 'auto' ? `<span class="tag">${category}</span>` : ''}
+  </div>
+  <div class="${llmsToUse.length > 1 ? 'compare-grid' : 'output-cards'}" id="results"></div>`;
+
+  const results = document.getElementById('results');
+  llmsToUse.forEach(llm => {
+    const info = LLMS[llm];
+    const card = document.createElement('div');
+    card.className = 'output-card';
+    card.id = `card-${llm}`;
+    card.innerHTML = `
+      <div class="output-card-header">
+        <div class="output-card-title">
+          <span class="provider-badge ${info.badge}">${info.name}</span>
+          <span style="font-size: 11px; color: var(--text-muted);">${info.model}</span>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-sm" data-copy="${llm}">📋 Copy</button>
+          <button class="btn btn-sm" data-download="${llm}">⬇ .md</button>
+        </div>
+      </div>
+      <div class="output-card-body" id="body-${llm}">
+        <div style="color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+          <span class="spinner"></span> กำลังเรียก ${info.name}...
+        </div>
+      </div>
+    `;
+    results.appendChild(card);
+  });
+
+  // Run all in parallel
+  const promises = llmsToUse.map(async (llm) => {
+    const body = document.getElementById(`body-${llm}`);
+    const startTime = Date.now();
+    try {
+      const result = await CALLERS[llm](systemPrompt, content, STATE.keys[llm]);
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      body.innerHTML = marked.parse(result);
+      body.dataset.raw = result;
+      const header = body.parentElement.querySelector('.output-card-header');
+      const time = document.createElement('span');
+      time.className = 'tag';
+      time.textContent = `${elapsed}s`;
+      time.style.fontSize = '10px';
+      header.querySelector('.output-card-title').appendChild(time);
+    } catch (e) {
+      body.innerHTML = `<div class="alert alert-warn">❌ Error: ${e.message}</div>`;
+    }
+  });
+
+  await Promise.all(promises);
+  btn.disabled = false;
+  btn.innerHTML = '▶ สร้างบทความ';
+
+  // wire copy/download buttons
+  results.addEventListener('click', (e) => {
+    const copyBtn = e.target.closest('[data-copy]');
+    if (copyBtn) {
+      const llm = copyBtn.dataset.copy;
+      const raw = document.getElementById(`body-${llm}`).dataset.raw;
+      if (raw) {
+        navigator.clipboard.writeText(raw);
+        copyBtn.textContent = '✓ Copied';
+        setTimeout(() => copyBtn.textContent = '📋 Copy', 1500);
+      }
+    }
+    const dlBtn = e.target.closest('[data-download]');
+    if (dlBtn) {
+      const llm = dlBtn.dataset.download;
+      const raw = document.getElementById(`body-${llm}`).dataset.raw;
+      if (raw) {
+        const blob = new Blob([raw], { type: 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `news-${llm}-${Date.now()}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }
+  });
+}
+
+// ========== EVENTS ==========
+document.getElementById('mode-tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.mode-tab');
+  if (tab) setMode(tab.dataset.mode);
+});
+
+document.getElementById('compare-mode').addEventListener('change', (e) => {
+  STATE.compareMode = e.target.checked;
+  if (!STATE.compareMode && STATE.selectedLLMs.size > 1) {
+    const first = Array.from(STATE.selectedLLMs)[0];
+    STATE.selectedLLMs.clear();
+    STATE.selectedLLMs.add(first);
+    renderLLMs();
+  }
+});
+
+document.getElementById('btn-settings').addEventListener('click', () => {
+  document.getElementById('key-openai').value = STATE.keys.openai || '';
+  document.getElementById('key-gemini').value = STATE.keys.gemini || '';
+  document.getElementById('key-claude').value = STATE.keys.claude || '';
+  document.getElementById('modal-settings').classList.add('open');
+});
+
+document.getElementById('btn-help').addEventListener('click', () => {
+  document.getElementById('modal-help').classList.add('open');
+});
+
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.target.closest('.modal-overlay').classList.remove('open');
+  });
+});
+
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', (e) => {
+    if (e.target === o) o.classList.remove('open');
+  });
+});
+
+document.getElementById('btn-save-keys').addEventListener('click', () => {
+  STATE.keys.openai = document.getElementById('key-openai').value.trim();
+  STATE.keys.gemini = document.getElementById('key-gemini').value.trim();
+  STATE.keys.claude = document.getElementById('key-claude').value.trim();
+  saveKeys();
+  renderLLMs();
+  document.getElementById('modal-settings').classList.remove('open');
+});
+
+document.getElementById('btn-generate').addEventListener('click', generate);
+
+// ========== INIT ==========
+loadKeys();
+renderLLMs();
+</script>
+</body>
+</html>
