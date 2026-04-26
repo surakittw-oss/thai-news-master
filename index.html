@@ -3,227 +3,321 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Thai News Master — AI Writing Assistant</title>
+<title>Thai News Master</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
 :root {
-  --bg: #0b0d12;
-  --bg-elev: #131722;
-  --bg-elev-2: #1a2030;
-  --border: #232a3c;
-  --text: #e8ecf3;
-  --text-dim: #94a0b8;
-  --text-muted: #6b7896;
-  --accent: #4f8cff;
-  --accent-hover: #3b7af0;
-  --accent-soft: rgba(79, 140, 255, 0.12);
-  --green: #34d399;
-  --orange: #fbbf24;
-  --red: #f87171;
-  --purple: #a78bfa;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
-  --radius: 10px;
-  --radius-sm: 6px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  font-family: 'IBM Plex Sans Thai', 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  font-size: 14px;
-  min-height: 100vh;
-}
-body { display: flex; flex-direction: column; }
+  --red: #e62227;
+  --red-hover: #c81b20;
+  --red-soft: rgba(230, 34, 39, 0.08);
+  --red-tint: rgba(230, 34, 39, 0.04);
 
-/* Header */
+  --black: #000000;
+  --gray-900: #1d1d1f;
+  --gray-700: #424245;
+  --gray-500: #6e6e73;
+  --gray-300: #d2d2d7;
+  --gray-200: #e5e5ea;
+  --gray-100: #f5f5f7;
+  --gray-50: #fafafa;
+  --white: #ffffff;
+
+  --green: #2ca84e;
+  --orange: #d97706;
+
+  --radius-lg: 18px;
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.12);
+
+  --font-sans: 'Sarabun PSK', 'Sarabun New', 'Sarabun', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  --font-display: 'Sarabun PSK', 'Sarabun New', 'Sarabun', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--gray-900);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+body { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ====== HEADER ====== */
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-elev);
-  position: sticky; top: 0; z-index: 50;
+  padding: 18px 32px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
-.brand { display: flex; align-items: center; gap: 12px; }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
 .brand-mark {
-  width: 32px; height: 32px;
-  background: linear-gradient(135deg, #4f8cff, #a78bfa);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; color: white;
+  width: 36px;
+  height: 36px;
+  background: var(--red);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--white);
+  font-size: 18px;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
-.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-.brand-tag { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.brand-text { line-height: 1.2; }
+.brand-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--black);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+.brand-tag {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  font-weight: 400;
+}
 .header-actions { display: flex; gap: 8px; }
 
-/* Buttons */
+/* ====== BUTTONS ====== */
 .btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px;
-  background: var(--bg-elev-2);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: var(--gray-100);
+  color: var(--black);
+  border: none;
+  border-radius: 999px;
   font: inherit;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
-.btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+.btn:hover { background: var(--gray-200); }
+.btn:active { transform: scale(0.97); }
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: white;
+  background: var(--red);
+  color: var(--white);
   font-weight: 500;
 }
-.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-.btn-primary:disabled { background: var(--bg-elev-2); border-color: var(--border); color: var(--text-muted); cursor: not-allowed; }
-.btn-ghost { background: transparent; border: 1px solid transparent; }
-.btn-ghost:hover { background: var(--bg-elev-2); border-color: var(--border); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-primary:hover { background: var(--red-hover); }
+.btn-primary:disabled {
+  background: var(--gray-200);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-dark {
+  background: var(--black);
+  color: var(--white);
+}
+.btn-dark:hover { background: var(--gray-900); }
+.btn-ghost {
+  background: transparent;
+}
+.btn-ghost:hover { background: var(--gray-100); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
 
-/* Layout */
+/* ====== LAYOUT ====== */
 .app-main {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 420px 1fr;
   flex: 1;
   min-height: 0;
 }
-@media (max-width: 980px) {
+@media (max-width: 1024px) {
   .app-main { grid-template-columns: 1fr; }
+  .panel-input { border-right: none; border-bottom: 1px solid var(--gray-200); }
 }
 
-/* Left panel — Input */
 .panel-input {
-  border-right: 1px solid var(--border);
-  padding: 20px;
+  border-right: 1px solid var(--gray-200);
+  padding: 32px;
   overflow-y: auto;
-  background: var(--bg-elev);
+  background: var(--white);
 }
-
-/* Right panel — Output */
 .panel-output {
-  padding: 20px;
+  padding: 32px 40px;
   overflow-y: auto;
-  background: var(--bg);
+  background: var(--gray-50);
 }
 
-.section { margin-bottom: 18px; }
+/* ====== SECTIONS ====== */
+.section { margin-bottom: 28px; }
 .section-label {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-/* Mode tabs */
+/* ====== MODE TABS ====== */
 .mode-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
-  background: var(--bg-elev-2);
+  gap: 0;
+  background: var(--gray-100);
   padding: 4px;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
 }
 .mode-tab {
-  padding: 8px 10px;
-  font-size: 12px;
+  padding: 10px 8px;
+  font-size: 13px;
   font-weight: 500;
   text-align: center;
   cursor: pointer;
-  border-radius: 4px;
-  color: var(--text-dim);
-  transition: all 0.15s;
+  border-radius: 8px;
+  color: var(--gray-700);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
 }
+.mode-tab:hover { color: var(--black); }
 .mode-tab.active {
-  background: var(--bg);
-  color: var(--text);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  background: var(--white);
+  color: var(--black);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
 }
 
-/* LLM selector */
+/* ====== LLM CARDS ====== */
 .llm-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 .llm-card {
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: 14px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: all 0.15s;
-  background: var(--bg-elev-2);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--white);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  text-align: center;
 }
-.llm-card:hover { border-color: var(--accent); }
+.llm-card:hover {
+  border-color: var(--gray-300);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
 .llm-card.active {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+  border-color: var(--black);
+  background: var(--black);
+  color: var(--white);
 }
-.llm-card-name { font-size: 12px; font-weight: 600; }
-.llm-card-model { font-size: 10px; color: var(--text-muted); }
+.llm-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.llm-card-model {
+  font-size: 10px;
+  color: var(--gray-500);
+  font-family: 'Inter', monospace;
+}
+.llm-card.active .llm-card-model { color: rgba(255, 255, 255, 0.6); }
 .llm-card-status {
   font-size: 10px;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-weight: 500;
 }
 .llm-status-ok { color: var(--green); }
 .llm-status-missing { color: var(--orange); }
+.llm-card.active .llm-status-ok { color: #6ee7a3; }
+.llm-card.active .llm-status-missing { color: #fbbf24; }
 
-/* Form controls */
+/* ====== COMPARE TOGGLE ====== */
+.compare-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--gray-700);
+  cursor: pointer;
+  user-select: none;
+}
+.compare-toggle input { width: 16px; height: 16px; accent-color: var(--red); }
+
+/* ====== INPUTS ====== */
 .input, .textarea, .select {
   width: 100%;
-  padding: 10px 12px;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--border);
+  padding: 12px 14px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
   border-radius: var(--radius-sm);
-  color: var(--text);
+  color: var(--gray-900);
   font: inherit;
-  font-size: 13px;
-  transition: border-color 0.15s;
+  font-size: 14px;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
   resize: vertical;
 }
 .input:focus, .textarea:focus, .select:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--black);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
-.textarea { min-height: 200px; font-family: inherit; line-height: 1.5; }
-.input-row { display: flex; gap: 8px; }
-.input-row > * { flex: 1; }
-
-/* Toggle */
-.toggle-group {
-  display: inline-flex;
-  background: var(--bg-elev-2);
-  padding: 3px;
-  border-radius: 5px;
-  border: 1px solid var(--border);
-}
-.toggle-btn {
-  padding: 5px 12px;
-  font-size: 12px;
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  border-radius: 3px;
+.textarea {
+  min-height: 220px;
   font-family: inherit;
+  line-height: 1.6;
 }
-.toggle-btn.active {
-  background: var(--accent);
-  color: white;
+.input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236e6e73' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
 }
 
-/* Output */
+/* ====== GENERATE BUTTON ====== */
+.btn-generate {
+  width: 100%;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+
+/* ====== OUTPUT ====== */
 .output-empty {
   display: flex;
   flex-direction: column;
@@ -231,185 +325,457 @@ body { display: flex; flex-direction: column; }
   justify-content: center;
   height: 100%;
   text-align: center;
-  color: var(--text-muted);
-  padding: 40px 20px;
+  color: var(--gray-500);
+  padding: 60px 20px;
+  min-height: 60vh;
 }
 .output-empty-icon {
-  font-size: 36px;
-  margin-bottom: 12px;
-  opacity: 0.4;
-}
-.output-empty-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--text-dim); }
-.output-empty-text { font-size: 13px; max-width: 360px; }
-
-.output-cards { display: flex; flex-direction: column; gap: 16px; }
-.output-card {
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.output-card-header {
+  width: 64px;
+  height: 64px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 18px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  background: var(--bg-elev-2);
-  border-bottom: 1px solid var(--border);
-}
-.output-card-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
-.provider-badge {
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-weight: 500;
-}
-.badge-openai { background: rgba(16, 163, 127, 0.15); color: #10a37f; }
-.badge-gemini { background: rgba(66, 133, 244, 0.15); color: #4285f4; }
-.badge-claude { background: rgba(204, 120, 92, 0.15); color: #cc785c; }
-.output-card-body {
-  padding: 16px 18px;
-  font-size: 14px;
-  max-height: 65vh;
-  overflow-y: auto;
-}
-.output-card-body h1, .output-card-body h2, .output-card-body h3 {
-  margin: 16px 0 8px; line-height: 1.3;
-}
-.output-card-body h1 { font-size: 20px; }
-.output-card-body h2 { font-size: 17px; color: var(--accent); }
-.output-card-body h3 { font-size: 15px; }
-.output-card-body p { margin: 8px 0; }
-.output-card-body ul, .output-card-body ol { margin: 8px 0 8px 20px; }
-.output-card-body code {
-  background: var(--bg-elev-2);
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-}
-.output-card-body pre {
-  background: var(--bg-elev-2);
-  padding: 12px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin: 8px 0;
-}
-.output-card-body table {
-  border-collapse: collapse;
-  margin: 8px 0;
-  font-size: 13px;
-  width: 100%;
-}
-.output-card-body th, .output-card-body td {
-  border: 1px solid var(--border);
-  padding: 6px 10px;
-  text-align: left;
-}
-.output-card-body th { background: var(--bg-elev-2); }
-.output-card-body blockquote {
-  border-left: 3px solid var(--accent);
-  padding: 8px 14px;
-  background: var(--accent-soft);
-  margin: 10px 0;
-  color: var(--text-dim);
-}
-
-/* Streaming spinner */
-.spinner {
-  display: inline-block;
-  width: 12px; height: 12px;
-  border: 2px solid var(--text-muted);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Status footer */
-.status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--text-muted);
-  padding: 6px 14px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-elev);
-}
-.status-bar .meta { display: flex; gap: 12px; }
-
-/* Modal — Settings */
-.modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: none;
   align-items: center;
   justify-content: center;
-  z-index: 100;
-  backdrop-filter: blur(4px);
+  font-size: 28px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
 }
-.modal-overlay.open { display: flex; }
-.modal {
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  width: 480px;
-  max-width: 92vw;
-  max-height: 86vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow);
+.output-empty-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--black);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal-title { font-size: 15px; font-weight: 600; }
-.modal-body { padding: 20px; }
-.modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
-.field { margin-bottom: 14px; }
-.field-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 6px; color: var(--text-dim); }
-.field-help { font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
-.field-help a { color: var(--accent); text-decoration: none; }
-
-.alert {
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  margin-bottom: 12px;
-  border-left: 3px solid;
-}
-.alert-warn { background: rgba(251, 191, 36, 0.08); border-color: var(--orange); color: #f5d97a; }
-.alert-info { background: var(--accent-soft); border-color: var(--accent); color: #b3cdff; }
-
-/* Compare layout */
-.compare-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 12px;
-}
-@media (max-width: 800px) {
-  .compare-grid { grid-template-columns: 1fr; }
+.output-empty-text {
+  font-size: 14px;
+  max-width: 420px;
+  line-height: 1.6;
+  color: var(--gray-700);
 }
 
-/* Output toolbar */
 .output-toolbar {
   display: flex;
-  gap: 6px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 20px;
   align-items: center;
   flex-wrap: wrap;
 }
 .tag {
   font-size: 11px;
-  padding: 2px 8px;
-  background: var(--bg-elev-2);
-  border: 1px solid var(--border);
+  padding: 5px 12px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
   border-radius: 999px;
-  color: var(--text-dim);
+  color: var(--gray-700);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.tag-red { background: var(--red); color: var(--white); border-color: var(--red); }
+
+.output-cards { display: flex; flex-direction: column; gap: 20px; }
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+}
+@media (max-width: 980px) {
+  .compare-grid { grid-template-columns: 1fr; }
+}
+
+.output-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.output-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+}
+.output-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.provider-badge {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.badge-openai { background: rgba(16, 163, 127, 0.1); color: #0d8466; }
+.badge-gemini { background: rgba(66, 133, 244, 0.1); color: #2664c2; }
+.badge-claude { background: rgba(204, 120, 92, 0.1); color: #b25e44; }
+.timing {
+  font-size: 11px;
+  color: var(--gray-500);
+  font-family: 'Inter', monospace;
+}
+.output-card-body {
+  padding: 28px 32px;
+  font-size: 15px;
+  line-height: 1.75;
+  max-height: 70vh;
+  overflow-y: auto;
+  color: var(--gray-900);
+}
+
+/* ====== ARTICLE TYPOGRAPHY ====== */
+.output-card-body h1,
+.output-card-body h2,
+.output-card-body h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--black);
+}
+.output-card-body h1 {
+  font-size: 26px;
+  margin: 24px 0 14px;
+}
+.output-card-body h2 {
+  font-size: 20px;
+  margin: 28px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.output-card-body h3 {
+  font-size: 16px;
+  margin: 20px 0 8px;
+  color: var(--red);
+}
+.output-card-body p { margin: 12px 0; }
+.output-card-body strong { font-weight: 600; color: var(--black); }
+.output-card-body em { color: var(--gray-700); }
+.output-card-body ul,
+.output-card-body ol { margin: 12px 0 12px 22px; }
+.output-card-body li { margin: 6px 0; }
+.output-card-body code {
+  background: var(--gray-100);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'Inter', 'SF Mono', monospace;
+  font-size: 13px;
+  color: var(--gray-900);
+}
+.output-card-body pre {
+  background: var(--gray-100);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.output-card-body table {
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: 13px;
+  width: 100%;
+}
+.output-card-body th,
+.output-card-body td {
+  border: 1px solid var(--gray-200);
+  padding: 8px 12px;
+  text-align: left;
+}
+.output-card-body th { background: var(--gray-50); font-weight: 600; }
+.output-card-body blockquote {
+  border-left: 3px solid var(--red);
+  padding: 4px 16px;
+  background: var(--red-tint);
+  margin: 14px 0;
+  color: var(--gray-700);
+  font-style: italic;
+}
+.output-card-body hr {
+  border: none;
+  border-top: 1px solid var(--gray-200);
+  margin: 24px 0;
+}
+
+/* ====== SPINNER ====== */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--gray-200);
+  border-top-color: var(--red);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ====== STATUS BAR ====== */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--gray-500);
+  padding: 10px 32px;
+  border-top: 1px solid var(--gray-200);
+  background: var(--white);
+}
+.status-bar .meta { display: flex; gap: 14px; align-items: center; }
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 5px;
+  background: var(--orange);
+}
+.status-dot.active { background: var(--green); }
+
+/* ====== MODAL ====== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.open { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  width: 520px;
+  max-width: 92vw;
+  max-height: 86vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--black);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+.modal-body { padding: 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--gray-50);
+}
+
+.field { margin-bottom: 18px; }
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--black);
+}
+.field-help {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.field-help a { color: var(--red); text-decoration: none; font-weight: 500; }
+.field-help a:hover { text-decoration: underline; }
+
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+.alert-info { background: var(--gray-100); color: var(--gray-900); border-left: 3px solid var(--black); }
+.alert-warn { background: rgba(217, 119, 6, 0.08); color: #92400e; border-left: 3px solid var(--orange); }
+.alert-red { background: var(--red-soft); color: var(--red-hover); border-left: 3px solid var(--red); }
+
+/* Close button */
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-700);
+  font-size: 16px;
+  transition: all 0.18s;
+}
+.modal-close:hover { background: var(--gray-200); color: var(--black); }
+
+/* Help modal content */
+.help-section { margin-bottom: 22px; }
+.help-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 6px;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+.help-section p {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+/* Selection */
+::selection { background: var(--red); color: var(--white); }
+::-moz-selection { background: var(--red); color: var(--white); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 5px; border: 2px solid var(--white); }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-300); }
+
+/* ============================================
+   MOBILE RESPONSIVE (Tablet & Phone)
+   ============================================ */
+
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+  html, body { font-size: 14px; }
+
+  .app-header {
+    padding: 12px 16px;
+  }
+  .brand { gap: 10px; }
+  .brand-mark { width: 32px; height: 32px; font-size: 16px; }
+  .brand-name { font-size: 15px; }
+  .brand-tag { font-size: 11px; }
+  .header-actions { gap: 6px; }
+  .header-actions .btn { padding: 8px 14px; font-size: 12px; }
+
+  .panel-input { padding: 20px 16px; }
+  .panel-output { padding: 20px 16px; }
+
+  .section { margin-bottom: 22px; }
+
+  .mode-tab { padding: 9px 6px; font-size: 12px; }
+
+  .llm-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .llm-card { padding: 10px 8px; }
+  .llm-card-name { font-size: 12px; }
+  .llm-card-model { font-size: 9px; }
+  .llm-card-status { font-size: 9px; margin-top: 4px; }
+
+  .input, .textarea, .select { font-size: 14px; padding: 11px 13px; }
+  .textarea { min-height: 180px; }
+
+  .btn-generate { padding: 14px; font-size: 14px; }
+
+  .output-card-body { padding: 22px 20px; font-size: 14px; }
+  .output-card-body h1 { font-size: 22px; }
+  .output-card-body h2 { font-size: 18px; }
+  .output-card-body h3 { font-size: 15px; }
+
+  .compare-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  .modal { width: 100%; max-width: 100%; max-height: 92vh; border-radius: 16px 16px 0 0; }
+  .modal-overlay { align-items: flex-end; }
+  .modal-body { padding: 18px; }
+  .modal-header { padding: 16px 18px; }
+  .modal-footer { padding: 12px 18px; }
+
+  .status-bar { font-size: 10px; padding: 8px 16px; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .status-bar .meta { flex-wrap: wrap; gap: 6px; }
+  .status-bar .meta > span:nth-child(2) { display: none; } /* hide separator */
+
+  .output-empty { min-height: 50vh; padding: 40px 16px; }
+  .output-empty-icon { width: 56px; height: 56px; font-size: 24px; }
+  .output-empty-title { font-size: 19px; }
+  .output-empty-text { font-size: 13px; }
+}
+
+/* Phone breakpoint */
+@media (max-width: 480px) {
+  html, body { font-size: 14px; }
+
+  .app-header { padding: 10px 14px; }
+  .brand-tag { display: none; } /* save space */
+  .header-actions .btn { padding: 7px 12px; font-size: 12px; }
+  .header-actions .btn-ghost { display: none; } /* hide help, keep settings */
+
+  .panel-input { padding: 16px 14px; }
+  .panel-output { padding: 16px 14px; }
+
+  .mode-tabs { padding: 3px; }
+  .mode-tab { padding: 9px 4px; font-size: 11px; }
+
+  /* LLM cards: stack to 1 col when very small */
+  .llm-grid { grid-template-columns: 1fr; gap: 6px; }
+  .llm-card { padding: 12px 14px; flex-direction: row; align-items: center; gap: 10px; text-align: left; }
+  .llm-card-name { flex: 0 0 auto; font-size: 13px; }
+  .llm-card-model { flex: 1; font-size: 11px; margin-left: 4px; }
+  .llm-card-status { margin-top: 0; font-size: 11px; flex: 0 0 auto; }
+
+  .input-row { grid-template-columns: 1fr; gap: 8px; }
+
+  .output-card-header {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .output-card-header > div:last-child { width: 100%; justify-content: flex-end; }
+  .output-card-body { padding: 18px 16px; font-size: 14px; line-height: 1.7; max-height: none; }
+  .output-card-body h1 { font-size: 20px; margin: 18px 0 10px; }
+  .output-card-body h2 { font-size: 17px; margin: 22px 0 10px; }
+  .output-card-body h3 { font-size: 15px; margin: 16px 0 8px; }
+
+  .output-toolbar { gap: 6px; margin-bottom: 14px; }
+  .tag { font-size: 10px; padding: 4px 9px; }
+
+  .compare-toggle { font-size: 12px; padding: 11px 12px; }
+
+  .modal-title { font-size: 16px; }
+  .modal-body { padding: 16px; }
+
+  .field { margin-bottom: 14px; }
+  .field-label { font-size: 12px; }
+  .field-help { font-size: 11px; }
+}
+
+/* Touch device tweaks (regardless of size) */
+@media (hover: none) and (pointer: coarse) {
+  .btn:active { transform: scale(0.96); }
+  .btn:hover { background: var(--gray-100); } /* disable hover bg change */
+  .btn-primary:hover { background: var(--red); }
+  .btn-dark:hover { background: var(--black); }
+  .llm-card:hover { transform: none; box-shadow: none; border-color: var(--gray-200); }
+  .llm-card.active { border-color: var(--black); }
 }
 </style>
 </head>
@@ -418,14 +784,14 @@ body { display: flex; flex-direction: column; }
 <header class="app-header">
   <div class="brand">
     <div class="brand-mark">ก</div>
-    <div>
+    <div class="brand-text">
       <div class="brand-name">Thai News Master</div>
-      <div class="brand-tag">บก. + นักเขียนข่าว AI · ราชบัณฑิตในตัว</div>
+      <div class="brand-tag">AI News Editor & Writer · ราชบัณฑิตในตัว</div>
     </div>
   </div>
   <div class="header-actions">
     <button class="btn btn-ghost" id="btn-help">คู่มือ</button>
-    <button class="btn" id="btn-settings">⚙ ตั้งค่า API Keys</button>
+    <button class="btn btn-dark" id="btn-settings">ตั้งค่า API</button>
   </div>
 </header>
 
@@ -436,7 +802,7 @@ body { display: flex; flex-direction: column; }
     <div class="section">
       <div class="section-label">โหมด</div>
       <div class="mode-tabs" id="mode-tabs">
-        <div class="mode-tab active" data-mode="editor">บก. แปล EN→TH</div>
+        <div class="mode-tab active" data-mode="editor">บก. แปลข่าว</div>
         <div class="mode-tab" data-mode="writer">เขียนข่าว</div>
         <div class="mode-tab" data-mode="seo">ทำ SEO</div>
       </div>
@@ -444,19 +810,15 @@ body { display: flex; flex-direction: column; }
 
     <div class="section">
       <div class="section-label">เลือก AI Model</div>
-      <div class="llm-grid" id="llm-grid">
-        <!-- populated by JS -->
-      </div>
-      <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
-        <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); cursor: pointer;">
-          <input type="checkbox" id="compare-mode" />
-          เปรียบเทียบหลายโมเดลพร้อมกัน
-        </label>
-      </div>
+      <div class="llm-grid" id="llm-grid"></div>
+      <label class="compare-toggle">
+        <input type="checkbox" id="compare-mode" />
+        เปรียบเทียบหลายโมเดลพร้อมกัน
+      </label>
     </div>
 
     <div class="section">
-      <div class="section-label">หมวดข่าว / ระดับ</div>
+      <div class="section-label">หมวดข่าว · ระดับความยาว</div>
       <div class="input-row">
         <select class="select" id="category">
           <option value="auto">ตรวจหาอัตโนมัติ</option>
@@ -470,27 +832,27 @@ body { display: flex; flex-direction: column; }
           <option value="environment">สิ่งแวดล้อม</option>
         </select>
         <select class="select" id="level">
-          <option value="general">General (400-600 คำ)</option>
-          <option value="breaking">Breaking (200-350 คำ)</option>
-          <option value="feature">Feature (700-1,200 คำ)</option>
+          <option value="general">General · 600-900 คำ</option>
+          <option value="breaking">Breaking · 350-500 คำ</option>
+          <option value="feature">Feature · 1,000-1,500 คำ</option>
         </select>
       </div>
     </div>
 
     <div class="section">
-      <div class="section-label">เนื้อหาข่าว / URL</div>
-      <textarea class="textarea" id="input-content" placeholder="วางเนื้อหาข่าว (EN หรือ TH) ที่นี่...
+      <div class="section-label">เนื้อหาข่าว</div>
+      <textarea class="textarea" id="input-content" placeholder="วางเนื้อหาข่าวที่นี่ (EN หรือ TH)
 
-หรือใส่ URL แล้วระบบจะแจ้งให้วาง content (browser block CORS — ดึง URL ตรงไม่ได้)" style="min-height: 240px;"></textarea>
+หมายเหตุ: เบราว์เซอร์ block CORS ของสำนักข่าว — ก๊อบเนื้อหามาวางตรงๆ จะแม่นกว่า"></textarea>
     </div>
 
     <div class="section">
-      <div class="section-label">หมายเหตุเพิ่มเติม (ถ้ามี)</div>
+      <div class="section-label">หมายเหตุพิเศษ <span style="font-weight:400;color:var(--gray-500);text-transform:none;letter-spacing:0">(ถ้ามี)</span></div>
       <input class="input" id="input-notes" placeholder="เช่น เน้นมุมไทย, เพิ่มข้อมูลตัวเลข, สั้นกระชับเป็นพิเศษ..." />
     </div>
 
-    <button class="btn btn-primary" id="btn-generate" style="width: 100%; padding: 12px; font-weight: 600; font-size: 14px;">
-      ▶ สร้างบทความ
+    <button class="btn btn-primary btn-generate" id="btn-generate">
+      สร้างบทความ
     </button>
   </aside>
 
@@ -500,8 +862,8 @@ body { display: flex; flex-direction: column; }
       <div class="output-empty-icon">📰</div>
       <div class="output-empty-title">ยังไม่มีผลลัพธ์</div>
       <div class="output-empty-text">
-        ตั้งค่า API key อย่างน้อย 1 ตัว เลือกโหมดและโมเดล วางเนื้อหาข่าว
-        แล้วกด "สร้างบทความ" — ผลลัพธ์จะมาพร้อม SEO/GEO/AEO metadata ครบชุด
+        ตั้งค่า API key อย่างน้อยหนึ่งตัว เลือกโหมดและโมเดล วางเนื้อหาข่าว
+        แล้วกด "สร้างบทความ" — ผลลัพธ์มาพร้อม SEO/GEO/AEO metadata ครบชุด
       </div>
     </div>
   </main>
@@ -509,10 +871,10 @@ body { display: flex; flex-direction: column; }
 </div>
 
 <div class="status-bar">
-  <div>Thai News Master v0.1 · Single-file prototype</div>
+  <div>Thai News Master · v0.2 minimal</div>
   <div class="meta">
-    <span id="status-keys">ยังไม่ได้ตั้งค่า API key</span>
-    <span>·</span>
+    <span><span class="status-dot" id="status-dot"></span><span id="status-keys">ยังไม่ได้ตั้งค่า API key</span></span>
+    <span style="color:var(--gray-300)">·</span>
     <span>ข้อมูลทั้งหมดเก็บใน localStorage ของเบราว์เซอร์เท่านั้น</span>
   </div>
 </div>
@@ -521,21 +883,19 @@ body { display: flex; flex-direction: column; }
 <div class="modal-overlay" id="modal-settings">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">⚙ API Keys</div>
-      <button class="btn btn-ghost btn-sm" data-close>✕</button>
+      <div class="modal-title">ตั้งค่า API Keys</div>
+      <button class="modal-close" data-close>✕</button>
     </div>
     <div class="modal-body">
       <div class="alert alert-info">
-        Key ของคุณจะถูกเก็บใน localStorage ของเบราว์เซอร์เท่านั้น ไม่ส่งไปไหน
-        แต่ละผู้ใช้ใส่ key ของตัวเอง — ไม่แชร์
+        Key ของคุณถูกเก็บใน localStorage ของเบราว์เซอร์เท่านั้น ไม่ส่งไปไหน — แต่ละผู้ใช้ใส่ key ของตัวเอง
       </div>
 
       <div class="field">
         <label class="field-label">OpenAI API Key</label>
         <input class="input" type="password" id="key-openai" placeholder="sk-..." />
         <div class="field-help">
-          ขอจาก <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>
-          · ใช้ <code>gpt-4o</code>
+          ขอจาก <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a> · โมเดลที่ใช้: <code>gpt-4o</code>
         </div>
       </div>
 
@@ -543,8 +903,7 @@ body { display: flex; flex-direction: column; }
         <label class="field-label">Google Gemini API Key</label>
         <input class="input" type="password" id="key-gemini" placeholder="AIza..." />
         <div class="field-help">
-          ขอจาก <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
-          · ใช้ <code>gemini-2.0-flash</code>
+          ขอจาก <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a> · โมเดลที่ใช้: <code>gemini-2.0-flash</code>
         </div>
       </div>
 
@@ -552,15 +911,12 @@ body { display: flex; flex-direction: column; }
         <label class="field-label">Anthropic Claude API Key</label>
         <input class="input" type="password" id="key-claude" placeholder="sk-ant-..." />
         <div class="field-help">
-          ขอจาก <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>
-          · ใช้ <code>claude-sonnet-4-5</code> · ต้อง enable browser direct access
+          ขอจาก <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> · โมเดลที่ใช้: <code>claude-sonnet-4-5</code>
         </div>
       </div>
 
       <div class="alert alert-warn">
-        ⚠ Claude API ปกติบล็อก browser direct call — เราใช้ header
-        <code>anthropic-dangerous-direct-browser-access: true</code>
-        ถ้ามีปัญหาให้ใช้ OpenAI หรือ Gemini แทน
+        Claude API ปกติ block browser direct call — เราใช้ header <code>anthropic-dangerous-direct-browser-access</code> ถ้ามีปัญหา ลอง OpenAI หรือ Gemini แทน
       </div>
     </div>
     <div class="modal-footer">
@@ -574,26 +930,41 @@ body { display: flex; flex-direction: column; }
 <div class="modal-overlay" id="modal-help">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">📖 วิธีใช้งาน</div>
-      <button class="btn btn-ghost btn-sm" data-close>✕</button>
+      <div class="modal-title">วิธีใช้งาน</div>
+      <button class="modal-close" data-close>✕</button>
     </div>
-    <div class="modal-body" style="font-size: 13px; line-height: 1.7;">
-      <h3 style="margin-bottom: 8px; font-size: 14px;">3 โหมดการทำงาน</h3>
-      <p><b>บก. แปล EN→TH</b> — แปลข่าวต่างประเทศเป็นไทย ใช้คำตามราชบัณฑิตยสถาน เรียบเรียงด้วยโครงสร้าง Lead → Context → Why it matters → What's next</p>
-      <p><b>เขียนข่าว</b> — เรียบเรียงข่าวจากข้อมูลที่ให้ ครอบคลุมทุกหมวด ทุกภาษา</p>
-      <p><b>ทำ SEO</b> — รับบทความสำเร็จมา สร้าง SEO/GEO/AEO metadata ครบชุดให้</p>
+    <div class="modal-body">
+      <div class="help-section">
+        <h4>3 โหมดการทำงาน</h4>
+        <p><strong>บก. แปลข่าว</strong> — แปลข่าวต่างประเทศเป็นไทย ใช้คำตามราชบัณฑิตยสถาน เรียบเรียงด้วยโครงสร้างหัวข้อย่อยแบบบทความเชิงลึก</p>
+        <p style="margin-top:6px"><strong>เขียนข่าว</strong> — เรียบเรียงข่าวจากข้อมูลที่ให้ ครอบคลุมทุกหมวด ทุกภาษา</p>
+        <p style="margin-top:6px"><strong>ทำ SEO</strong> — รับบทความสำเร็จ → สร้าง SEO/GEO/AEO metadata ครบชุดให้</p>
+      </div>
 
-      <h3 style="margin: 16px 0 8px; font-size: 14px;">โมเดลที่รองรับ</h3>
-      <p>OpenAI GPT-4o, Google Gemini 2.0 Flash, Anthropic Claude Sonnet 4.5 — ใส่ key ของแต่ละเจ้าใน "ตั้งค่า"</p>
+      <div class="help-section">
+        <h4>โมเดลที่รองรับ</h4>
+        <p>OpenAI GPT-4o · Google Gemini 2.0 Flash · Anthropic Claude Sonnet 4.5 — ใส่ key แต่ละเจ้าใน "ตั้งค่า"</p>
+      </div>
 
-      <h3 style="margin: 16px 0 8px; font-size: 14px;">โหมดเปรียบเทียบ</h3>
-      <p>เลือกหลายโมเดล + ติ๊ก "เปรียบเทียบหลายโมเดลพร้อมกัน" → ระบบเรียก API ทุกตัวพร้อมกัน เทียบผลลัพธ์ได้ side-by-side</p>
+      <div class="help-section">
+        <h4>โหมดเปรียบเทียบ</h4>
+        <p>ติ๊ก "เปรียบเทียบหลายโมเดลพร้อมกัน" → เลือกหลายโมเดลได้ → ระบบเรียก API ทุกตัวพร้อมกัน เทียบผลลัพธ์ side-by-side</p>
+      </div>
 
-      <h3 style="margin: 16px 0 8px; font-size: 14px;">URL fetching</h3>
-      <p>เบราว์เซอร์บล็อก CORS ดึง URL ของสำนักข่าวต่างๆ ไม่ได้ — ให้ <b>ก๊อบเนื้อหาข่าวมาวางตรงๆ</b> แทน</p>
+      <div class="help-section">
+        <h4>โครงสร้างบทความ</h4>
+        <p>บทความที่ AI เขียนจะมี: หัวข่าวที่ดึงดูด, ย่อหน้านำ (lead), หัวข้อย่อย 3-5 ข้อพร้อมรายละเอียดเชิงลึก, สรุปท้ายเรื่อง, URL Slug, Keywords, อ้างอิง, คำบรรยายปกข่าว และ SEO/GEO/AEO ครบชุด</p>
+      </div>
 
-      <h3 style="margin: 16px 0 8px; font-size: 14px;">ความเป็นส่วนตัว</h3>
-      <p>API key เก็บใน localStorage ของเบราว์เซอร์เท่านั้น เนื้อหาที่คุณวางจะถูกส่งไปยัง API ของ provider ที่เลือก (OpenAI/Google/Anthropic) ตาม policy ของแต่ละเจ้า</p>
+      <div class="help-section">
+        <h4>URL fetching</h4>
+        <p>เบราว์เซอร์บล็อก CORS ของสำนักข่าว — ก๊อบเนื้อหามาวางตรงๆ ดีที่สุด</p>
+      </div>
+
+      <div class="help-section">
+        <h4>ความเป็นส่วนตัว</h4>
+        <p>API key เก็บใน localStorage ของเบราว์เซอร์ เนื้อหาที่วางจะถูกส่งไปยัง provider (OpenAI/Google/Anthropic) ตาม policy ของแต่ละเจ้า</p>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary" data-close>เข้าใจแล้ว</button>
@@ -706,130 +1077,233 @@ Wall Street → วอลล์สตรีท
 2. ไม่มีแต่แพร่หลาย → ใช้คำที่แพร่หลาย + วงเล็บอังกฤษ
 3. ศัพท์ใหม่ ยังไม่มีคำแปล → ทับศัพท์ + อธิบายในวงเล็บครั้งแรก
 4. ชื่อเฉพาะ (คน/บริษัท/สถานที่) → ทับศัพท์ + อังกฤษในวงเล็บครั้งแรก
-5. แบรนด์ดัง (Apple, Google, Tesla, Meta, Amazon, Microsoft, Samsung, Netflix) → ใช้ภาษาอังกฤษเลย ไม่ต้องแปล
+5. แบรนด์ดัง (Apple, Google, Tesla, Meta, Amazon, Microsoft, Samsung, Netflix) → ใช้ภาษาอังกฤษเลย
+`;
+
+// ========== EXAMPLE OUTPUT (Few-shot reference for Editor/Writer) ==========
+const REFERENCE_EXAMPLE = `
+# ตัวอย่างบทความที่ดี — ใช้เป็นแนวทางการเขียน (โครงสร้าง+โทน+ความยาว)
+
+## 📰 Title
+จุดเปลี่ยนประวัติศาสตร์! เกาหลีใต้ไฟเขียว "Google Maps" ใช้งานเต็มรูปแบบ ทลายกำแพงข้อมูล ท้าชนแอปเจ้าถิ่น
+
+## 📝 บทความ
+
+ถือเป็นข่าวใหญ่ที่สร้างความตื่นเต้นให้กับอุตสาหกรรมเทคโนโลยีและนักเดินทางทั่วโลก เมื่อสื่อชั้นนำอย่าง TechCrunch และ NBC News รายงานตรงกันว่า รัฐบาลเกาหลีใต้ได้ตัดสินใจ "ปลดล็อก" อนุญาตให้ Google Maps สามารถเปิดให้บริการแผนที่และการนำทางแบบเต็มรูปแบบ (Fully Functioning) ได้เป็นครั้งแรก หลังจากที่เผชิญกับข้อจำกัดทางกฎหมายมานานหลายทศวรรษ
+
+### 1. ทลายกำแพงความมั่นคงและ Data Localization
+
+เป็นที่ทราบกันดีในวงการไอทีว่า เกาหลีใต้มีกฎหมายความมั่นคงแห่งชาติที่เข้มงวดมากเพื่อรับมือกับภัยคุกคามจากเกาหลีเหนือ โดยมีข้อห้ามไม่ให้ส่งออกข้อมูลแผนที่ภูมิประเทศความละเอียดสูงไปยังเซิร์ฟเวอร์ที่อยู่ต่างประเทศ ส่งผลให้ที่ผ่านมา Google Maps ในเกาหลีใต้ไม่สามารถใช้งานฟีเจอร์นำทางรถยนต์ (Turn-by-turn), เส้นทางเดินเท้า หรือดูสภาพการจราจรแบบเรียลไทม์ได้
+
+การยอมผ่อนปรนในครั้งนี้จึงสะท้อนถึงการเจรจาและการปรับตัวด้านโครงสร้างพื้นฐานข้อมูล (Data Infrastructure) ครั้งสำคัญของรัฐบาลเกาหลีใต้
+
+### 2. เขย่าบัลลังก์แอปเจ้าถิ่น Naver และ Kakao
+
+การเข้ามาเปิดใช้งานเต็มพิกัดของ Google Maps ถือเป็นการประกาศศึกชิงส่วนแบ่งตลาดโดยตรงกับแพลตฟอร์มยักษ์ใหญ่ในประเทศอย่าง Naver Map และ KakaoMap
+
+จุดแข็งของ Google คือกลุ่มผู้ใช้งานจากทั่วโลก (Global Users) นักท่องเที่ยวต่างชาติจะไม่ต้องพบกับอุปสรรคด้านภาษา หรือความยุ่งยากในการสมัครบัญชีแอปพลิเคชันท้องถิ่นอีกต่อไป ซึ่งจะช่วยกระตุ้นเศรษฐกิจและการสัญจรในเกาหลีใต้ได้อย่างมหาศาล
+
+### 3. ปลดล็อกประสบการณ์ AI และ AR ระดับโลก
+
+การเข้าถึงข้อมูลแผนที่ได้อย่างสมบูรณ์ จะปูทางให้ Google สามารถนำเทคโนโลยีขั้นสูงมาให้บริการในเกาหลีใต้ได้อย่างเต็มที่ ไม่ว่าจะเป็นฟีเจอร์ Immersive View (การจำลองสถานที่แบบ 3 มิติ), Live View (การนำทางด้วยเทคโนโลยี AR) และการใช้ศักยภาพของปัญญาประดิษฐ์เพื่อช่วยค้นหาสถานที่ หรือวิเคราะห์เส้นทางที่ประหยัดเวลาและพลังงานที่สุด
+
+### สรุปท้ายเรื่อง
+
+การปลดล็อกข้อจำกัดทางเทคโนโลยีครั้งนี้ ถือเป็นการตอกย้ำว่าข้อมูล (Data) คือหัวใจสำคัญในการขับเคลื่อนเศรษฐกิจยุคดิจิทัล และการผูกขาดแพลตฟอร์มท้องถิ่นอาจไม่ใช่คำตอบสุดท้ายอีกต่อไป ต้องมารอติดตามกันว่า Google จะนำ AI หรือนวัตกรรมใหม่ๆ อะไรมาเปิดตัวเพื่อต่อยอดบน Google Maps เวอร์ชันเกาหลีใต้นี้
+
+## 📎 Slug & Metadata
+
+**URL Slug:** south-korea-allows-fully-functioning-google-maps-tech-news
+
+**Keyword:** Google Maps เกาหลีใต้, แอปแผนที่เกาหลี, Naver Map, KakaoMap, กฎหมายความมั่นคงเกาหลี, ข่าวเทคโนโลยี, นวัตกรรม AI, ข่าวไอที
+
+**อ้างอิง:**
+- TechCrunch
+- NBC News
+
+**คำบรรยายปกข่าวสั้นๆ:** ข่าวใหญ่รับปี 2026! เกาหลีใต้ปลดล็อกกฎหมายความมั่นคง ยอมให้ "Google Maps" เปิดใช้งานฟีเจอร์นำทางแบบเต็มรูปแบบเป็นครั้งแรก ทลายกำแพงข้อมูล พร้อมท้าชนแอปเจ้าถิ่นอย่าง Naver และ KakaoMap!
 `;
 
 // ========== SYSTEM PROMPTS ==========
+function lengthGuidance(level) {
+  if (level === 'breaking') return '350-500 คำ (Breaking news ที่ยังคงต้องครอบคลุมและมีน้ำหนัก)';
+  if (level === 'feature') return '1,000-1,500 คำ (Feature เชิงลึก มีหัวข้อย่อย 4-6 ข้อ)';
+  return '600-900 คำ (General — มีหัวข้อย่อย 3-5 ข้อ พร้อมรายละเอียดเชิงลึก)';
+}
+
 const PROMPTS = {
-  editor: (level, category, notes) => `คุณคือ "บรรณาธิการข่าวต่างประเทศมืออาชีพ" ที่แปลข่าวภาษาอังกฤษเป็นภาษาไทย
+  editor: (level, category, notes) => `คุณคือ "บรรณาธิการข่าวต่างประเทศมืออาชีพ" ที่แปลข่าวภาษาอังกฤษเป็นภาษาไทย และเรียบเรียงเป็นบทความ "เชิงลึก" ที่มีคุณภาพระดับสำนักข่าวชั้นนำ
+
+# ปรัชญาการทำงาน — สำคัญที่สุด
+นี่ไม่ใช่การ "แปล" ตรงตัว แต่คือการ "เรียบเรียงใหม่" ให้เป็นบทความข่าวไทยที่:
+- มีน้ำเสียงดึงดูด ชวนให้อ่านต่อ ไม่ใช่ภาษาราชการแห้งๆ
+- มีหัวข้อย่อย (subheadings) แบ่งเป็นประเด็น 3-5 ข้อ ที่อ่านแล้วเห็นภาพรวมได้ทันที
+- เพิ่ม "บริบท" และ "การวิเคราะห์" ให้กับข้อเท็จจริงต้นฉบับ — ไม่ใช่แค่บอกว่าเกิดอะไร แต่บอกว่ามันสำคัญยังไง
+- ลงท้ายด้วย "สรุปท้ายเรื่อง" ที่ชวนคิดต่อ
 
 # คลังคำศัพท์ราชบัณฑิตยสถาน (ใช้คำเหล่านี้เสมอ)
 ${THAI_TERMS_GUIDE}
 
+# ตัวอย่างบทความที่ดี (ใช้เป็นต้นแบบโครงสร้างและโทน)
+${REFERENCE_EXAMPLE}
+
 # หลักการแปล 5 ข้อ
-1. แปลความ ไม่แปลคำ — เข้าใจย่อหน้าทั้งย่อหน้า แล้วเขียนใหม่เป็นไทยที่ลื่นไหล
+1. แปลความ ไม่แปลคำ — เข้าใจทั้งย่อหน้า แล้วเขียนใหม่ลื่นไหล
 2. ใช้คำตามราชบัณฑิต (เทียบกับคลังคำข้างบน)
-3. ชื่อเฉพาะ — ทับศัพท์ + วงเล็บอังกฤษครั้งแรก ครั้งถัดไปไม่ต้องวงเล็บ
-4. ตัวเลขและหน่วย — ปรับให้ผู้อ่านไทยเข้าใจ (สกุลเงินใส่ทั้ง USD + บาท, ฟาเรนไฮต์ → เซลเซียส, ไมล์ → กิโลเมตร)
+3. ชื่อเฉพาะ — ทับศัพท์ + วงเล็บอังกฤษครั้งแรก ครั้งถัดไปไม่ต้องใส่วงเล็บ
+4. ตัวเลข/หน่วย — สกุลเงินใส่ทั้ง USD + บาท, ฟาเรนไฮต์→เซลเซียส, ไมล์→กิโลเมตร
 5. คำพูดใส่ "" + ระบุชื่อ+ตำแหน่งผู้พูด
 
-# โครงสร้างบทความ
-- ย่อหน้า 1 — Lead (Who+What ใน 2-3 ประโยค ห้ามขึ้นต้นด้วย "เมื่อเร็วๆ นี้" หรือ "สำนักข่าวรายงานว่า")
-- ย่อหน้า 2-3 — Context (When + Where + How)
-- ย่อหน้า 4-5 — Why it matters (ผลกระทบต่อผู้อ่านไทย/ภูมิภาค)
-- ย่อหน้าสุดท้าย — What's next (สิ่งที่ต้องจับตา)
+# โครงสร้างบทความ (เลียนแบบจากตัวอย่าง)
+- **Title** — หัวข่าวภาษาไทยที่ดึงดูด ใช้คำที่ทำให้คนอยากอ่าน เช่น "จุดเปลี่ยน!", "ทลายกำแพง...", "เขย่าวงการ..." ใส่เครื่องหมายอัศเจรีย์ได้
+- **Lead** — ย่อหน้านำ 2-3 ประโยค สรุปข่าวพร้อมแหล่งข่าว และทำไมข่าวนี้สำคัญ
+- **หัวข้อย่อย 3-5 ข้อ** ในรูปแบบ "### 1. [หัวข้อ]", "### 2. [หัวข้อ]" — แต่ละหัวข้อมี 1-2 ย่อหน้า อธิบายเชิงลึก
+- **### สรุปท้ายเรื่อง** — สรุปและชวนคิดต่อ ลงท้ายเปิดประเด็นให้น่าติดตาม
 
-# ความยาว
-ระดับ ${level}: ${level === 'breaking' ? '200-350 คำ' : level === 'feature' ? '700-1,200 คำ' : '400-600 คำ'}
+# ความยาวเป้าหมาย
+${lengthGuidance(level)}
 หมวด: ${category === 'auto' ? 'ตรวจหาเองจากเนื้อหา' : category}
-${notes ? `\nหมายเหตุพิเศษ: ${notes}` : ''}
+${notes ? `\n# หมายเหตุพิเศษจากบรรณาธิการ\n${notes}` : ''}
 
-# Output Format (Markdown)
-ตอบเป็น Markdown ตามรูปแบบนี้เป๊ะๆ:
+# Output Format (Markdown — ทำตามนี้เป๊ะๆ)
 
 ## 📰 Title
-[หัวข่าวภาษาไทย]
+[หัวข่าวภาษาไทยที่ดึงดูด]
 
 ## 📝 บทความ
-[บทความเต็ม จัดย่อหน้าให้ชัดเจน เว้นบรรทัดระหว่างย่อหน้า]
 
-## 🔑 SEO/GEO/AEO Metadata
+[ย่อหน้านำ 2-3 ประโยค]
 
-**Focus Keyword:** [คำหลัก 1 คำ/วลี]
+### 1. [หัวข้อย่อยที่ 1]
+
+[เนื้อหาเชิงลึก 1-2 ย่อหน้า]
+
+### 2. [หัวข้อย่อยที่ 2]
+
+[เนื้อหา]
+
+### 3. [หัวข้อย่อยที่ 3]
+
+[เนื้อหา]
+
+### สรุปท้ายเรื่อง
+
+[ย่อหน้าสรุป + ชวนคิดต่อ]
+
+## 📎 Slug & Metadata
+
+**URL Slug:** [english-lowercase-hyphen]
+
+**Keyword:** [คำหลักไทย คั่นด้วย , — 6-8 คำ]
+
+**อ้างอิง:**
+- [แหล่งที่ 1]
+- [แหล่งที่ 2]
+
+**คำบรรยายปกข่าวสั้นๆ:** [1-2 ประโยค ดึงดูดให้คลิก]
+
+## 🔑 SEO Metadata
+
+**Focus Keyword:** [...]
 **SEO Title:** [≤60 ตัวอักษร]
 **Meta Description:** [140-160 ตัวอักษร]
-**URL Slug:** [lowercase-hyphen-english]
-**Facebook Title:** [≤60 ตัวอักษร]
-**X/Twitter Title:** [สั้นกว่า เน้น impact]
-**Alt Text:** [บรรยายภาพปก 1 ประโยค]
+**Facebook Title:** [≤60]
+**X/Twitter Title:** [...]
+**Alt Text:** [บรรยายภาพปก]
 **Secondary Keywords:** [3-5 คำ คั่นด้วย ,]
 
-**FAQ Schema (3 คำถาม-คำตอบ):**
-Q1: [คำถาม]
-A1: [คำตอบ]
-Q2: [คำถาม]
-A2: [คำตอบ]
-Q3: [คำถาม]
-A3: [คำตอบ]
+## 🤖 GEO/AEO
 
-**AI Snippet (40-60 คำ):** [คำตอบสรุปสำหรับ AI/Voice search]
-
+**AI Snippet (40-60 คำ):** [...]
+**FAQ Schema:**
+Q1: [...] / A1: [...]
+Q2: [...] / A2: [...]
+Q3: [...] / A3: [...]
 **People Also Ask:**
-- [คำถามที่ 1]
-- [คำถามที่ 2]
-- [คำถามที่ 3]
-
-## ⚠ หมายเหตุ
-[ถ้ามีจุดที่ไม่แน่ใจ คำที่ต้องตรวจ หรือ context ที่หายไป ระบุที่นี่]
+- [...]
+- [...]
+- [...]
 `,
 
-  writer: (level, category, notes) => `คุณคือ "นักเขียนข่าวมืออาชีพ" ที่เรียบเรียงข่าวจากข้อมูลใดๆ ก็ได้ ไม่ว่าจะเป็นภาษาไทยหรืออังกฤษ ครอบคลุมทุกหมวดข่าว
+  writer: (level, category, notes) => `คุณคือ "นักเขียนข่าวมืออาชีพ" ที่เรียบเรียงข่าวจากข้อมูลที่ได้รับ — ไม่ว่าจะภาษาไทยหรืออังกฤษ ครอบคลุมทุกหมวดข่าว เน้น "บทความเชิงลึก" ที่มีโครงสร้างชัดเจน ไม่ใช่แค่สรุปสั้นๆ
 
-# คลังคำศัพท์ราชบัณฑิตยสถาน
+# คลังคำราชบัณฑิตยสถาน
 ${THAI_TERMS_GUIDE}
+
+# ตัวอย่างโครงสร้างที่ต้องการ
+${REFERENCE_EXAMPLE}
 
 # หลักการเขียน
 - ภาษาไทยถูกต้องตามราชบัณฑิต
-- โทนกึ่งทางการ — จริงจังแต่ไม่แข็งทื่อ อ่านสบายตา
+- โทนกึ่งทางการ — จริงจังแต่ดึงดูด มีน้ำเสียงไม่ทางการจ๋า
 - ประโยคกระชับ ย่อหน้าสั้น 2-4 ประโยค
 - Active voice เป็นหลัก
-- ข้อเท็จจริงนำ ความเห็นตาม
-- ขึ้นต้นด้วยเรื่องที่น่าสนใจที่สุด ห้ามใช้ "เมื่อเร็วๆ นี้" หรือ "ตามรายงาน"
+- ขึ้นต้นด้วยเรื่องน่าสนใจที่สุด ห้ามใช้ "เมื่อเร็วๆ นี้" / "ตามรายงาน"
 - ชื่อเฉพาะ — ทับศัพท์ + วงเล็บอังกฤษครั้งแรก
-
-# โครงสร้าง 5W1H
-ย่อหน้า 1: Lead (Who+What) — ดึงดูด
-ย่อหน้า 2-3: Context (When+Where+How)
-ย่อหน้า 4-5: Why it matters
-ย่อหน้าสุดท้าย: What's next
+- มีหัวข้อย่อยแบ่งเป็นประเด็น (### 1. ... ### 2. ...)
+- จบด้วย "### สรุปท้ายเรื่อง"
 
 # ความยาว
-${level === 'breaking' ? '200-350 คำ (Breaking)' : level === 'feature' ? '700-1,200 คำ (Feature)' : '400-600 คำ (General)'}
-หมวด: ${category === 'auto' ? 'ตรวจเองจากเนื้อหา' : category}
-${notes ? `\nหมายเหตุพิเศษ: ${notes}` : ''}
+${lengthGuidance(level)}
+หมวด: ${category === 'auto' ? 'ตรวจเอง' : category}
+${notes ? `\n# หมายเหตุพิเศษ\n${notes}` : ''}
 
 # Output (Markdown)
-ตอบเป็น Markdown ตามรูปแบบ:
 
 ## 📰 Title
-[หัวข่าว ≤80 ตัวอักษร]
+[หัวข่าว ดึงดูด ≤80 ตัวอักษร]
 
 ## 📝 บทความ
-[บทความเต็ม]
 
-## 🔑 SEO/GEO/AEO Metadata
+[Lead 2-3 ประโยค]
+
+### 1. [หัวข้อย่อย]
+
+[เนื้อหาเชิงลึก]
+
+### 2. [หัวข้อย่อย]
+
+[เนื้อหา]
+
+### 3. [หัวข้อย่อย]
+
+[เนื้อหา]
+
+### สรุปท้ายเรื่อง
+
+[สรุป + ชวนคิดต่อ]
+
+## 📎 Slug & Metadata
+
+**URL Slug:** [english-lowercase-hyphen]
+**Keyword:** [คำหลัก คั่นด้วย , — 6-8 คำ]
+**อ้างอิง:**
+- [...]
+- [...]
+**คำบรรยายปกข่าวสั้นๆ:** [1-2 ประโยค]
+
+## 🔑 SEO Metadata
 
 **Focus Keyword:** [...]
 **SEO Title:** [≤60]
 **Meta Description:** [140-160]
-**URL Slug:** [english-lowercase-hyphen]
 **Facebook Title:** [≤60]
 **X/Twitter Title:** [...]
 **Alt Text:** [...]
 **Secondary Keywords:** [...]
 
-**FAQ Schema:**
-Q1/A1, Q2/A2, Q3/A3
+## 🤖 GEO/AEO
 
 **AI Snippet (40-60 คำ):** [...]
-
+**FAQ Schema:**
+Q1/A1, Q2/A2, Q3/A3
 **People Also Ask:**
-- ...
-- ...
-- ...
+- [...]
+- [...]
+- [...]
 `,
 
-  seo: () => `คุณคือผู้เชี่ยวชาญ SEO/GEO/AEO ปี 2026 รับบทความที่เขียนเสร็จแล้วและสร้าง metadata ครบชุดที่ทำให้ Yoast SEO เขียวทุกจุด พร้อม Generative Engine Optimization และ Answer Engine Optimization
+  seo: () => `คุณคือผู้เชี่ยวชาญ SEO/GEO/AEO ปี 2026 รับบทความที่เขียนเสร็จแล้ว แล้วสร้าง metadata ครบชุดที่ทำให้ Yoast SEO เขียวทุกจุด พร้อม Generative Engine Optimization และ Answer Engine Optimization
 
 # คลังคำราชบัณฑิต
 ${THAI_TERMS_GUIDE}
@@ -837,42 +1311,47 @@ ${THAI_TERMS_GUIDE}
 # Output (Markdown)
 
 ## 🔑 SEO Metadata
-**Focus Keyword:** [...]
+
+**Focus Keyword:** [คำหลัก]
 **SEO Title:** [≤60 ตัวอักษร, ใส่ keyword ข้างหน้า]
 **Meta Description:** [140-160 ตัวอักษร, ดึงดูดให้คลิก]
 **URL Slug:** [english-lowercase-hyphen]
 **Facebook Title:** [≤60, อยากแชร์]
-**X/Twitter Title:** [สั้น, เน้นตัวเลข/impact]
+**X/Twitter Title:** [สั้น เน้นตัวเลข/impact]
 **Alt Text:** [บรรยายภาพปก]
 **Secondary Keywords:** [3-5 คำ]
 
 ## 🤖 GEO (Generative Engine Optimization)
+
 **AI Snippet (40-60 คำ):** [คำตอบสรุปที่ AI จะอ้างได้]
-**Entity mentions:** [ชื่อคน/องค์กรหลัก ที่ AI ควรจดจำ]
+**Entity mentions:** [ชื่อคน/องค์กรหลักที่ AI ควรจดจำ]
 **Citation-worthy fact:** [ข้อเท็จจริงโดดเด่นที่ AI จะอ้าง]
 
 ## ❓ AEO (Answer Engine Optimization)
+
 **FAQ Schema (3 Q&A):**
-Q1: [...]
-A1: [...]
-Q2: [...]
-A2: [...]
-Q3: [...]
-A3: [...]
+Q1: [...] / A1: [...]
+Q2: [...] / A2: [...]
+Q3: [...] / A3: [...]
 
-**People Also Ask (3 คำถาม):**
+**People Also Ask:**
 - [...]
 - [...]
 - [...]
 
-**Featured Snippet target:** [คำตอบ 50-60 คำ ที่ Google จะเอาไปทำ snippet]
+**Featured Snippet target:** [คำตอบ 50-60 คำสำหรับ Google snippet]
 
-## 5 Title Variations
+## 📰 5 Title Variations
+
 1. [...]
 2. [...]
 3. [...]
 4. [...]
 5. [...]
+
+## 🎯 คำบรรยายปกข่าวสั้นๆ
+
+[1-2 ประโยคน่าคลิก]
 `
 };
 
@@ -914,7 +1393,7 @@ function renderLLMs() {
       <div class="llm-card-name">${info.name}</div>
       <div class="llm-card-model">${info.model}</div>
       <div class="llm-card-status ${hasKey ? 'llm-status-ok' : 'llm-status-missing'}">
-        ${hasKey ? '✓ มี key' : '⚠ ยังไม่มี key'}
+        ${hasKey ? '✓ พร้อมใช้' : '⚠ ยังไม่ได้ตั้งค่า'}
       </div>
     `;
     card.addEventListener('click', () => {
@@ -935,12 +1414,13 @@ function renderLLMs() {
 function updateStatusBar() {
   const haveKeys = Object.entries(STATE.keys).filter(([k,v]) => v).map(([k]) => LLMS[k].name);
   const el = document.getElementById('status-keys');
+  const dot = document.getElementById('status-dot');
   if (haveKeys.length === 0) {
     el.textContent = 'ยังไม่ได้ตั้งค่า API key';
-    el.style.color = 'var(--orange)';
+    dot.classList.remove('active');
   } else {
     el.textContent = `Keys: ${haveKeys.join(', ')}`;
-    el.style.color = 'var(--green)';
+    dot.classList.add('active');
   }
 }
 
@@ -949,11 +1429,10 @@ function setMode(mode) {
   document.querySelectorAll('.mode-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.mode === mode);
   });
-  // SEO mode doesn't need category/level
   const isSeo = mode === 'seo';
   document.getElementById('input-content').placeholder = isSeo
     ? 'วางบทความที่เขียนเสร็จแล้ว — ระบบจะสร้าง SEO/GEO/AEO ให้'
-    : 'วางเนื้อหาข่าว (EN หรือ TH) ที่นี่...';
+    : 'วางเนื้อหาข่าวที่นี่ (EN หรือ TH)\n\nหมายเหตุ: เบราว์เซอร์ block CORS ของสำนักข่าว — ก๊อบเนื้อหามาวางตรงๆ จะแม่นกว่า';
 }
 
 // ========== API CALLS ==========
@@ -970,8 +1449,8 @@ async function callOpenAI(systemPrompt, userContent, key) {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent }
       ],
-      temperature: 0.7,
-      max_tokens: 4096
+      temperature: 0.75,
+      max_tokens: 6000
     })
   });
   if (!res.ok) {
@@ -989,7 +1468,7 @@ async function callGemini(systemPrompt, userContent, key) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents: [{ role: 'user', parts: [{ text: userContent }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 4096 }
+      generationConfig: { temperature: 0.75, maxOutputTokens: 6000 }
     })
   });
   if (!res.ok) {
@@ -1011,7 +1490,7 @@ async function callClaude(systemPrompt, userContent, key) {
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-5',
-      max_tokens: 4096,
+      max_tokens: 6000,
       system: systemPrompt,
       messages: [{ role: 'user', content: userContent }]
     })
@@ -1034,7 +1513,6 @@ async function generate() {
     return;
   }
 
-  // pick LLMs
   const llmsToUse = Array.from(STATE.selectedLLMs).filter(id => STATE.keys[id]);
   if (llmsToUse.length === 0) {
     alert('กรุณาตั้งค่า API key อย่างน้อย 1 ตัว และเลือกโมเดลที่มี key');
@@ -1053,14 +1531,13 @@ async function generate() {
 
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> กำลังสร้าง...';
+  btn.innerHTML = '<span class="spinner"></span> กำลังสร้างบทความ...';
 
-  // Render placeholder cards
   const out = document.getElementById('output-area');
   out.innerHTML = `<div class="output-toolbar">
-    <span class="tag">โหมด: ${STATE.mode}</span>
+    <span class="tag tag-red">${STATE.mode === 'editor' ? 'บก. แปลข่าว' : STATE.mode === 'writer' ? 'เขียนข่าว' : 'ทำ SEO'}</span>
     <span class="tag">${llmsToUse.length} โมเดล</span>
-    <span class="tag">${level === 'breaking' ? 'Breaking' : level === 'feature' ? 'Feature' : 'General'}</span>
+    <span class="tag">${level === 'breaking' ? 'Breaking · 350-500 คำ' : level === 'feature' ? 'Feature · 1,000-1,500 คำ' : 'General · 600-900 คำ'}</span>
     ${category !== 'auto' ? `<span class="tag">${category}</span>` : ''}
   </div>
   <div class="${llmsToUse.length > 1 ? 'compare-grid' : 'output-cards'}" id="results"></div>`;
@@ -1075,7 +1552,7 @@ async function generate() {
       <div class="output-card-header">
         <div class="output-card-title">
           <span class="provider-badge ${info.badge}">${info.name}</span>
-          <span style="font-size: 11px; color: var(--text-muted);">${info.model}</span>
+          <span class="timing">${info.model}</span>
         </div>
         <div style="display:flex; gap:6px;">
           <button class="btn btn-sm" data-copy="${llm}">📋 Copy</button>
@@ -1083,7 +1560,7 @@ async function generate() {
         </div>
       </div>
       <div class="output-card-body" id="body-${llm}">
-        <div style="color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+        <div style="color: var(--gray-500); display: flex; align-items: center; gap: 10px; padding: 20px 0;">
           <span class="spinner"></span> กำลังเรียก ${info.name}...
         </div>
       </div>
@@ -1091,7 +1568,6 @@ async function generate() {
     results.appendChild(card);
   });
 
-  // Run all in parallel
   const promises = llmsToUse.map(async (llm) => {
     const body = document.getElementById(`body-${llm}`);
     const startTime = Date.now();
@@ -1100,12 +1576,8 @@ async function generate() {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
       body.innerHTML = marked.parse(result);
       body.dataset.raw = result;
-      const header = body.parentElement.querySelector('.output-card-header');
-      const time = document.createElement('span');
-      time.className = 'tag';
-      time.textContent = `${elapsed}s`;
-      time.style.fontSize = '10px';
-      header.querySelector('.output-card-title').appendChild(time);
+      const header = body.parentElement.querySelector('.output-card-title .timing');
+      if (header) header.textContent = `${LLMS[llm].model} · ${elapsed}s`;
     } catch (e) {
       body.innerHTML = `<div class="alert alert-warn">❌ Error: ${e.message}</div>`;
     }
@@ -1113,9 +1585,8 @@ async function generate() {
 
   await Promise.all(promises);
   btn.disabled = false;
-  btn.innerHTML = '▶ สร้างบทความ';
+  btn.innerHTML = 'สร้างบทความ';
 
-  // wire copy/download buttons
   results.addEventListener('click', (e) => {
     const copyBtn = e.target.closest('[data-copy]');
     if (copyBtn) {
@@ -1123,8 +1594,9 @@ async function generate() {
       const raw = document.getElementById(`body-${llm}`).dataset.raw;
       if (raw) {
         navigator.clipboard.writeText(raw);
+        const orig = copyBtn.textContent;
         copyBtn.textContent = '✓ Copied';
-        setTimeout(() => copyBtn.textContent = '📋 Copy', 1500);
+        setTimeout(() => copyBtn.textContent = orig, 1500);
       }
     }
     const dlBtn = e.target.closest('[data-download]');
