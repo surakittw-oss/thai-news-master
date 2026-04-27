@@ -903,7 +903,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
         <label class="field-label">Google Gemini API Key</label>
         <input class="input" type="password" id="key-gemini" placeholder="AIza..." />
         <div class="field-help">
-          ขอจาก <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a> · โมเดลที่ใช้: <code>gemini-2.0-flash</code>
+          ขอจาก <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a> · โมเดลที่ใช้: <code>gemini-2.5-flash</code>
         </div>
       </div>
 
@@ -943,7 +943,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
       <div class="help-section">
         <h4>โมเดลที่รองรับ</h4>
-        <p>OpenAI GPT-4o · Google Gemini 2.0 Flash · Anthropic Claude Sonnet 4.5 — ใส่ key แต่ละเจ้าใน "ตั้งค่า"</p>
+        <p>OpenAI GPT-4o · Google Gemini 2.5 Flash · Anthropic Claude Sonnet 4.5 — ใส่ key แต่ละเจ้าใน "ตั้งค่า"</p>
       </div>
 
       <div class="help-section">
@@ -1350,7 +1350,7 @@ const STATE = {
 
 const LLMS = {
   openai: { name: 'OpenAI', model: 'gpt-4o', badge: 'badge-openai' },
-  gemini: { name: 'Gemini', model: 'gemini-2.0-flash', badge: 'badge-gemini' },
+  gemini: { name: 'Gemini', model: 'gemini-2.5-flash', badge: 'badge-gemini' },
   claude: { name: 'Claude', model: 'claude-sonnet-4-5', badge: 'badge-claude' }
 };
 
@@ -1447,7 +1447,7 @@ async function callOpenAI(systemPrompt, userContent, key) {
 }
 
 async function callGemini(systemPrompt, userContent, key) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
